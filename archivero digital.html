@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Archivero Digital Central – GuardianAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      background-color: #0f172a; /* Azul oscuro de fondo */
+      color: #e2e8f0; /* Texto blanco/gris claro */
+      font-family: 'Inter', sans-serif;
+    }
+    .glass-effect {
+      /* Efecto de cristal oscuro y futurista */
+      background: linear-gradient(135deg, rgba(23, 30, 48, 0.9), rgba(30, 41, 59, 0.8));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+    }
+    .file-row {
+      transition: background-color 0.2s;
+    }
+    .file-row:hover {
+      background-color: #1e293b;
+    }
+  </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+
+  <!-- Encabezado y Título del Módulo -->
+  <header class="mb-8">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-2">
+      <i class="fas fa-archive text-purple-400 mr-3"></i> Archivero Digital Central
+    </h1>
+    <p class="text-purple-300">
+      Resguardo seguro de reportes, facturas, y documentos legales. Toda la información clave en formato **XML** y **PDF**.
+    </p>
+  </header>
+
+  <!-- SECCIÓN: BÚSQUEDA Y FILTROS -->
+  <div class="glass-effect rounded-xl p-6 mb-8">
+    <h2 class="text-2xl font-bold text-white mb-4"><i class="fas fa-search mr-2 text-blue-400"></i> Búsqueda Avanzada</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- Filtro 1: Tipo de Documento -->
+      <div>
+        <label for="docType" class="block text-sm font-medium text-gray-400 mb-1">Tipo de Documento</label>
+        <select id="docType" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 focus:ring-blue-500 focus:border-blue-500">
+          <option>Todos</option>
+          <option>Facturas (CFDI)</option>
+          <option>Reportes de Bitácora (PDF)</option>
+          <option>Nómina (XML)</option>
+          <option>Contratos Legales</option>
+          <option>Registro de Incidentes</option>
+        </select>
+      </div>
+
+      <!-- Filtro 2: Período de Tiempo -->
+      <div>
+        <label for="timePeriod" class="block text-sm font-medium text-gray-400 mb-1">Período</label>
+        <input type="month" id="timePeriod" value="2025-10" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <!-- Filtro 3: Propiedad / Cliente -->
+      <div>
+        <label for="client" class="block text-sm font-medium text-gray-400 mb-1">Cliente / Propiedad</label>
+        <select id="client" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 focus:ring-blue-500 focus:border-blue-500">
+          <option>Todos los Clientes</option>
+          <option>Torres Altavista</option>
+          <option>Condominio El Roble</option>
+          <option>Residencial Cumbres</option>
+        </select>
+      </div>
+
+      <!-- Botón de Búsqueda -->
+      <div class="flex items-end">
+        <button class="w-full p-3 rounded-lg font-semibold bg-blue-600 hover:bg-blue-700 transition">
+          <i class="fas fa-filter mr-2"></i> Aplicar Filtros
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN: RESULTADOS DEL ARCHIVERO -->
+  <h2 class="text-2xl font-bold text-white mb-4"><i class="fas fa-list-ul mr-2 text-green-400"></i> Documentos Encontrados (38)</h2>
+
+  <div class="glass-effect rounded-xl p-6">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-700">
+        <thead>
+          <tr>
+            <th class="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Documento</th>
+            <th class="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tipo</th>
+            <th class="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Cliente</th>
+            <th class="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Fecha de Resguardo</th>
+            <th class="px-3 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-800 text-sm">
+          <!-- Archivo 1: Factura (XML + PDF) -->
+          <tr class="file-row">
+            <td class="px-3 py-4 whitespace-nowrap font-semibold">FAC-ALT-1025-001 - Octubre 2025</td>
+            <td class="px-3 py-4 whitespace-nowrap">Factura CFDI (XML/PDF)</td>
+            <td class="px-3 py-4 whitespace-nowrap">Torres Altavista</td>
+            <td class="px-3 py-4 whitespace-nowrap">28/10/2025</td>
+            <td class="px-3 py-4 whitespace-nowrap text-center space-x-3">
+              <button class="text-green-400 hover:text-green-300" title="Descargar PDF"><i class="fas fa-file-pdf"></i> PDF</button>
+              <button class="text-yellow-400 hover:text-yellow-300" title="Descargar XML"><i class="fas fa-file-code"></i> XML</button>
+            </td>
+          </tr>
+          <!-- Archivo 2: Reporte de Bitácora -->
+          <tr class="file-row">
+            <td class="px-3 py-4 whitespace-nowrap font-semibold">Bitácora General - 27/10/2025 (Noche)</td>
+            <td class="px-3 py-4 whitespace-nowrap">Reporte Diario (PDF)</td>
+            <td class="px-3 py-4 whitespace-nowrap">Condominio El Roble</td>
+            <td class="px-3 py-4 whitespace-nowrap">28/10/2025</td>
+            <td class="px-3 py-4 whitespace-nowrap text-center space-x-3">
+              <button class="text-green-400 hover:text-green-300" title="Descargar PDF"><i class="fas fa-file-pdf"></i> PDF</button>
+              <button disabled class="text-gray-500" title="No aplica XML"><i class="fas fa-file-code"></i> XML</button>
+            </td>
+          </tr>
+          <!-- Archivo 3: Nómina (XML) -->
+          <tr class="file-row">
+            <td class="px-3 py-4 whitespace-nowrap font-semibold">Nómina Quincenal - 1ra Noviembre</td>
+            <td class="px-3 py-4 whitespace-nowrap">Nómina (XML)</td>
+            <td class="px-3 py-4 whitespace-nowrap">GuardianAI Central</td>
+            <td class="px-3 py-4 whitespace-nowrap">01/11/2025</td>
+            <td class="px-3 py-4 whitespace-nowrap text-center space-x-3">
+              <button class="text-green-400 hover:text-green-300" title="Descargar PDF (Recibo)"><i class="fas fa-file-pdf"></i> PDF</button>
+              <button class="text-yellow-400 hover:text-yellow-300" title="Descargar XML"><i class="fas fa-file-code"></i> XML</button>
+            </td>
+          </tr>
+          <!-- Archivo 4: Contrato -->
+          <tr class="file-row">
+            <td class="px-3 py-4 whitespace-nowrap font-semibold">Contrato Servicio RES-CUM-2025</td>
+            <td class="px-3 py-4 whitespace-nowrap">Contrato (PDF Firmado)</td>
+            <td class="px-3 py-4 whitespace-nowrap">Residencial Cumbres</td>
+            <td class="px-3 py-4 whitespace-nowrap">15/09/2025</td>
+            <td class="px-3 py-4 whitespace-nowrap text-center space-x-3">
+              <button class="text-green-400 hover:text-green-300" title="Descargar PDF"><i class="fas fa-file-pdf"></i> PDF</button>
+              <button disabled class="text-gray-500" title="No aplica XML"><i class="fas fa-file-code"></i> XML</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-6 flex justify-between items-center text-sm text-gray-400">
+        <span>Mostrando 1 a 4 de 38 documentos.</span>
+        <div class="space-x-2">
+            <button class="p-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition disabled:opacity-50" disabled>Anterior</button>
+            <button class="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition">Siguiente</button>
+        </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN: SUBIDA MANUAL DE DOCUMENTOS -->
+  <div class="glass-effect rounded-xl p-6 mt-8">
+    <h2 class="text-xl font-bold text-white mb-4"><i class="fas fa-cloud-upload-alt mr-2 text-purple-400"></i> Subir Documento Manualmente</h2>
+    <p class="text-sm text-gray-400 mb-4">Utilice esta función para resguardar documentos que no se generaron automáticamente por el sistema (ej. licencias, certificados).</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+            <label for="uploadTitle" class="block text-sm font-medium text-gray-400 mb-1">Título del Documento</label>
+            <input type="text" id="uploadTitle" placeholder="Ej: Licencia de Operación 2026" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:ring-purple-500 focus:border-purple-500">
+        </div>
+        <div>
+            <label for="uploadFile" class="block text-sm font-medium text-gray-400 mb-1">Seleccionar Archivo (PDF/XML)</label>
+            <input type="file" id="uploadFile" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 transition">
+        </div>
+        <div class="flex items-end">
+             <button class="w-full p-3 rounded-lg font-semibold bg-purple-600 hover:bg-purple-700 transition">
+                <i class="fas fa-upload mr-2"></i> Iniciar Resguardo en AWS S3
+            </button>
+        </div>
+    </div>
+  </div>
+
+</body>
+</html>
+

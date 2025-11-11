@@ -1,0 +1,115 @@
+        // Agregar residente
+        function addResident() {
+            const form = document.getElementById('addResidentForm');
+            const formData = new FormData(form);
+            
+            const newResident = {
+                id: 'res_' + Date.now(),
+                name: document.getElementById('residentName').value,
+                email: document.getElementById('residentEmail').value,
+                phone: document.getElementById('residentPhone').value,
+                unit: document.getElementById('residentUnit').value,
+                unitType: document.getElementById('unitType').value,
+                status: 'active',
+                lastPayment: new Date().toISOString().split('T')[0],
+                notes: document.getElementById('residentNotes').value
+            };
+
+            residentsData.push(newResident);
+            loadResidents();
+            hideAddResidentModal();
+            showNotification('Residente agregado exitosamente', 'success');
+            
+            // Reset form
+            form.reset();
+        }
+
+        // Funciones de utilidad
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-MX', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN'
+            }).format(amount);
+        }
+
+        // Notificaciones
+        function showNotification(message, type = 'info') {
+            const toast = document.getElementById('notificationToast');
+            const icon = document.getElementById('toastIcon');
+            const messageEl = document.getElementById('toastMessage');
+            
+            messageEl.textContent = message;
+            
+            // Cambiar icono según tipo
+            icon.className = type === 'success' ? 'fas fa-check-circle text-green-400' :
+                           type === 'error' ? 'fas fa-exclamation-circle text-red-400' :
+                           type === 'warning' ? 'fas fa-exclamation-triangle text-yellow-400' :
+                           'fas fa-info-circle text-blue-400';
+            
+            toast.classList.remove('hidden');
+            
+            // Auto-hide después de 3 segundos
+            setTimeout(() => {
+                hideNotification();
+            }, 3000);
+        }
+
+        function hideNotification() {
+            document.getElementById('notificationToast').classList.add('hidden');
+        }
+
+        // Funciones de acciones
+        function editResident(id) {
+            showNotification('Función de editar en desarrollo', 'info');
+        }
+
+        function viewResident(id) {
+            showNotification('Función de ver detalles en desarrollo', 'info');
+        }
+
+        function deleteResident(id) {
+            if (confirm('¿Estás seguro de eliminar este residente?')) {
+                residentsData = residentsData.filter(r => r.id !== id);
+                loadResidents();
+                showNotification('Residente eliminado', 'success');
+            }
+        }
+
+        function markAsPaid(id) {
+            const payment = paymentsData.find(p => p.id === id);
+            if (payment) {
+                payment.status = 'paid';
+                payment.method = 'Manual';
+                loadPayments();
+                showNotification('Pago marcado como pagado', 'success');
+            }
+        }
+
+        function exportResidents() {
+            showNotification('Exportando residentes...', 'info');
+        }
+
+        function generatePaymentReport() {
+            showNotification('Generando reporte de pagos...', 'info');
+        }
+
+        // Menú móvil
+        function toggleMobileMenu() {
+            showNotification('Menú móvil en desarrollo', 'info');
+        }
+
+        function toggleNotifications() {
+            showNotification('Panel de notificaciones en desarrollo', 'info');
+        }
+    </script>
+</body>
+</html>

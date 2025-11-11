@@ -1,0 +1,4034 @@
+<!-- CondoconnectAI - Widgets del Dashboard -->
+<!-- Componentes modulares y reutilizables para el dashboard principal -->
+
+<div id="dashboard-widgets-module" class="module-container">
+    <!-- Header del Módulo -->
+    <div class="module-header">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-white flex items-center">
+                    <i class="fas fa-th-large mr-3 text-indigo-400"></i>
+                    Widgets del Dashboard
+                </h1>
+                <p class="text-gray-400 mt-2">Componentes modulares y personalizables para el panel principal</p>
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="DashboardWidgets.addWidget()" class="btn-primary">
+                    <i class="fas fa-plus mr-2"></i>Agregar Widget
+                </button>
+                <button onclick="DashboardWidgets.customizeLayout()" class="btn-success">
+                    <i class="fas fa-layout mr-2"></i>Personalizar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado de Widgets -->
+    <div class="widgets-status-bar mb-8">
+        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-xl">
+            <div class="flex items-center space-x-4">
+                <div class="widgets-indicator active">
+                    <i class="fas fa-cubes text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-lg">Widgets: ACTIVOS</h3>
+                    <p class="text-indigo-100 text-sm">18 widgets disponibles • 12 activos • Última actualización: hace 30s</p>
+                </div>
+            </div>
+            <div class="flex space-x-6 text-white">
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="active-widgets">12</div>
+                    <div class="text-sm text-indigo-100">Activos</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="total-widgets">18</div>
+                    <div class="text-sm text-indigo-100">Disponibles</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="update-frequency">30s</div>
+                    <div class="text-sm text-indigo-100">Actualización</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navegación de Categorías -->
+    <div class="widget-categories mb-8">
+        <nav class="flex space-x-8">
+            <button class="category-button active" data-category="all">
+                <i class="fas fa-th mr-2"></i>Todos
+            </button>
+            <button class="category-button" data-category="metrics">
+                <i class="fas fa-chart-line mr-2"></i>Métricas
+            </button>
+            <button class="category-button" data-category="financial">
+                <i class="fas fa-dollar-sign mr-2"></i>Financieros
+            </button>
+            <button class="category-button" data-category="operational">
+                <i class="fas fa-cogs mr-2"></i>Operacionales
+            </button>
+            <button class="category-button" data-category="communication">
+                <i class="fas fa-comments mr-2"></i>Comunicación
+            </button>
+            <button class="category-button" data-category="custom">
+                <i class="fas fa-puzzle-piece mr-2"></i>Personalizados
+            </button>
+        </nav>
+    </div>
+
+    <!-- Grid de Widgets -->
+    <div class="widgets-grid">
+        <!-- Widget: Resumen Financiero -->
+        <div class="widget-card financial active" data-widget="financial-summary">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-chart-pie text-green-400"></i>
+                    <span>Resumen Financiero</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('financial-summary')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.refreshWidget('financial-summary')" title="Actualizar">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('financial-summary')" title="Ocultar">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="financial-summary">
+                    <div class="summary-item">
+                        <div class="summary-icon bg-green-500">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="summary-data">
+                            <div class="summary-label">Ingresos del Mes</div>
+                            <div class="summary-value">$125,450,000</div>
+                            <div class="summary-change positive">+12.5%</div>
+                        </div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-icon bg-red-500">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="summary-data">
+                            <div class="summary-label">Gastos del Mes</div>
+                            <div class="summary-value">$78,320,000</div>
+                            <div class="summary-change negative">+8.3%</div>
+                        </div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-icon bg-blue-500">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div class="summary-data">
+                            <div class="summary-label">Balance Neto</div>
+                            <div class="summary-value">$47,130,000</div>
+                            <div class="summary-change positive">+18.2%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="widget-chart">
+                    <canvas id="financial-chart" width="300" height="150"></canvas>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">Actualizado hace 5 min</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('financial-summary')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget: Ocupación de Unidades -->
+        <div class="widget-card operational active" data-widget="unit-occupancy">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-home text-blue-400"></i>
+                    <span>Ocupación de Unidades</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('unit-occupancy')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.refreshWidget('unit-occupancy')" title="Actualizar">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('unit-occupancy')" title="Ocultar">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="occupancy-stats">
+                    <div class="occupancy-circle">
+                        <div class="circle-progress" data-percentage="87">
+                            <div class="circle-inner">
+                                <div class="circle-number">87%</div>
+                                <div class="circle-label">Ocupadas</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="occupancy-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Total Unidades:</span>
+                            <span class="detail-value">156</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Ocupadas:</span>
+                            <span class="detail-value">136</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Disponibles:</span>
+                            <span class="detail-value">20</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">En Mantenimiento:</span>
+                            <span class="detail-value">3</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="towers-breakdown">
+                    <div class="tower-item">
+                        <span class="tower-name">Torre A</span>
+                        <div class="tower-bar">
+                            <div class="tower-fill" style="width: 92%"></div>
+                        </div>
+                        <span class="tower-percentage">92%</span>
+                    </div>
+                    <div class="tower-item">
+                        <span class="tower-name">Torre B</span>
+                        <div class="tower-bar">
+                            <div class="tower-fill" style="width: 85%"></div>
+                        </div>
+                        <span class="tower-percentage">85%</span>
+                    </div>
+                    <div class="tower-item">
+                        <span class="tower-name">Torre C</span>
+                        <div class="tower-bar">
+                            <div class="tower-fill" style="width: 84%"></div>
+                        </div>
+                        <span class="tower-percentage">84%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">Actualizado hace 2 min</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('unit-occupancy')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget: Órdenes de Mantenimiento -->
+        <div class="widget-card operational active" data-widget="maintenance-orders">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-tools text-yellow-400"></i>
+                    <span>Órdenes de Mantenimiento</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('maintenance-orders')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.refreshWidget('maintenance-orders')" title="Actualizar">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('maintenance-orders')" title="Ocultar">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="maintenance-summary">
+                    <div class="maintenance-stat">
+                        <div class="stat-number">23</div>
+                        <div class="stat-label">Pendientes</div>
+                        <div class="stat-icon bg-red-500">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    <div class="maintenance-stat">
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">En Proceso</div>
+                        <div class="stat-icon bg-yellow-500">
+                            <i class="fas fa-wrench"></i>
+                        </div>
+                    </div>
+                    <div class="maintenance-stat">
+                        <div class="stat-number">42</div>
+                        <div class="stat-label">Completadas</div>
+                        <div class="stat-icon bg-green-500">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="maintenance-list">
+                    <div class="maintenance-item urgent">
+                        <div class="maintenance-priority">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="maintenance-info">
+                            <div class="maintenance-title">Fuga de agua - Torre A Piso 5</div>
+                            <div class="maintenance-time">Reportado hace 2 horas</div>
+                        </div>
+                        <div class="maintenance-status">
+                            <span class="status-badge urgent">Urgente</span>
+                        </div>
+                    </div>
+                    <div class="maintenance-item high">
+                        <div class="maintenance-priority">
+                            <i class="fas fa-exclamation"></i>
+                        </div>
+                        <div class="maintenance-info">
+                            <div class="maintenance-title">Ascensor B fuera de servicio</div>
+                            <div class="maintenance-time">Reportado hace 4 horas</div>
+                        </div>
+                        <div class="maintenance-status">
+                            <span class="status-badge high">Alta</span>
+                        </div>
+                    </div>
+                    <div class="maintenance-item normal">
+                        <div class="maintenance-priority">
+                            <i class="fas fa-info"></i>
+                        </div>
+                        <div class="maintenance-info">
+                            <div class="maintenance-title">Mantenimiento jardines</div>
+                            <div class="maintenance-time">Programado para mañana</div>
+                        </div>
+                        <div class="maintenance-status">
+                            <span class="status-badge normal">Normal</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">Actualizado hace 1 min</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('maintenance-orders')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget: Pagos Recientes -->
+        <div class="widget-card financial active" data-widget="recent-payments">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-credit-card text-purple-400"></i>
+                    <span>Pagos Recientes</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('recent-payments')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.refreshWidget('recent-payments')" title="Actualizar">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('recent-payments')" title="Ocultar">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="payments-summary">
+                    <div class="payment-total">
+                        <div class="total-amount">$45,680,000</div>
+                        <div class="total-label">Recaudado hoy</div>
+                        <div class="total-change positive">+15.2%</div>
+                    </div>
+                </div>
+                <div class="payments-list">
+                    <div class="payment-item">
+                        <div class="payment-info">
+                            <div class="payment-unit">Apt 501-A</div>
+                            <div class="payment-concept">Administración Nov 2024</div>
+                            <div class="payment-time">hace 15 min</div>
+                        </div>
+                        <div class="payment-amount">$850,000</div>
+                        <div class="payment-method">
+                            <i class="fas fa-credit-card text-blue-400"></i>
+                        </div>
+                    </div>
+                    <div class="payment-item">
+                        <div class="payment-info">
+                            <div class="payment-unit">Apt 302-B</div>
+                            <div class="payment-concept">Administración Nov 2024</div>
+                            <div class="payment-time">hace 32 min</div>
+                        </div>
+                        <div class="payment-amount">$850,000</div>
+                        <div class="payment-method">
+                            <i class="fas fa-university text-green-400"></i>
+                        </div>
+                    </div>
+                    <div class="payment-item">
+                        <div class="payment-info">
+                            <div class="payment-unit">Apt 104-C</div>
+                            <div class="payment-concept">Administración Nov 2024</div>
+                            <div class="payment-time">hace 1 hora</div>
+                        </div>
+                        <div class="payment-amount">$850,000</div>
+                        <div class="payment-method">
+                            <i class="fas fa-mobile-alt text-purple-400"></i>
+                        </div>
+                    </div>
+                    <div class="payment-item">
+                        <div class="payment-info">
+                            <div class="payment-unit">Apt 205-A</div>
+                            <div class="payment-concept">Cuota Extraordinaria</div>
+                            <div class="payment-time">hace 2 horas</div>
+                        </div>
+                        <div class="payment-amount">$1,200,000</div>
+                        <div class="payment-method">
+                            <i class="fas fa-credit-card text-blue-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">Actualizado hace 30s</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('recent-payments')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget: Comunicaciones Activas -->
+        <div class="widget-card communication active" data-widget="active-communications">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-bullhorn text-orange-400"></i>
+                    <span>Comunicaciones Activas</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('active-communications')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.refreshWidget('active-communications')" title="Actualizar">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('active-communications')" title="Ocultar">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="communications-stats">
+                    <div class="comm-stat">
+                        <div class="comm-icon bg-blue-500">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="comm-data">
+                            <div class="comm-number">156</div>
+                            <div class="comm-label">Emails Enviados</div>
+                        </div>
+                    </div>
+                    <div class="comm-stat">
+                        <div class="comm-icon bg-green-500">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="comm-data">
+                            <div class="comm-number">89</div>
+                            <div class="comm-label">WhatsApp</div>
+                        </div>
+                    </div>
+                    <div class="comm-stat">
+                        <div class="comm-icon bg-yellow-500">
+                            <i class="fas fa-sms"></i>
+                        </div>
+                        <div class="comm-data">
+                            <div class="comm-number">23</div>
+                            <div class="comm-label">SMS</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="communications-list">
+                    <div class="communication-item">
+                        <div class="comm-type email">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="comm-content">
+                            <div class="comm-title">Recordatorio pago administración</div>
+                            <div class="comm-details">
+                                <span class="comm-recipients">45 destinatarios</span>
+                                <span class="comm-time">hace 30 min</span>
+                            </div>
+                        </div>
+                        <div class="comm-status">
+                            <span class="status-badge delivered">Entregado</span>
+                        </div>
+                    </div>
+                    <div class="communication-item">
+                        <div class="comm-type whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="comm-content">
+                            <div class="comm-title">Corte de agua programado</div>
+                            <div class="comm-details">
+                                <span class="comm-recipients">156 destinatarios</span>
+                                <span class="comm-time">hace 1 hora</span>
+                            </div>
+                        </div>
+                        <div class="comm-status">
+                            <span class="status-badge delivered">Entregado</span>
+                        </div>
+                    </div>
+                    <div class="communication-item">
+                        <div class="comm-type sms">
+                            <i class="fas fa-sms"></i>
+                        </div>
+                        <div class="comm-content">
+                            <div class="comm-title">Código de acceso visitante</div>
+                            <div class="comm-details">
+                                <span class="comm-recipients">1 destinatario</span>
+                                <span class="comm-time">hace 2 horas</span>
+                            </div>
+                        </div>
+                        <div class="comm-status">
+                            <span class="status-badge delivered">Entregado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">Actualizado hace 1 min</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('active-communications')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget: Visitantes del Día -->
+        <div class="widget-card operational active" data-widget="daily-visitors">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-user-friends text-cyan-400"></i>
+                    <span>Visitantes del Día</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('daily-visitors')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.refreshWidget('daily-visitors')" title="Actualizar">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('daily-visitors')" title="Ocultar">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="visitors-summary">
+                    <div class="visitor-count">
+                        <div class="count-number">47</div>
+                        <div class="count-label">Visitantes Hoy</div>
+                        <div class="count-change positive">+12 vs ayer</div>
+                    </div>
+                    <div class="visitor-stats">
+                        <div class="visitor-stat">
+                            <span class="stat-label">Autorizados:</span>
+                            <span class="stat-value">42</span>
+                        </div>
+                        <div class="visitor-stat">
+                            <span class="stat-label">Pendientes:</span>
+                            <span class="stat-value">5</span>
+                        </div>
+                        <div class="visitor-stat">
+                            <span class="stat-label">Rechazados:</span>
+                            <span class="stat-value">2</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="visitors-list">
+                    <div class="visitor-item pending">
+                        <div class="visitor-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="visitor-info">
+                            <div class="visitor-name">Carlos Mendoza</div>
+                            <div class="visitor-details">
+                                <span class="visitor-unit">Visita Apt 301-B</span>
+                                <span class="visitor-time">hace 5 min</span>
+                            </div>
+                        </div>
+                        <div class="visitor-actions">
+                            <button class="btn-xs btn-success" title="Autorizar">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn-xs btn-danger" title="Rechazar">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="visitor-item authorized">
+                        <div class="visitor-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="visitor-info">
+                            <div class="visitor-name">Ana García</div>
+                            <div class="visitor-details">
+                                <span class="visitor-unit">Visita Apt 205-A</span>
+                                <span class="visitor-time">hace 15 min</span>
+                            </div>
+                        </div>
+                        <div class="visitor-status">
+                            <span class="status-badge authorized">Autorizado</span>
+                        </div>
+                    </div>
+                    <div class="visitor-item authorized">
+                        <div class="visitor-avatar">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="visitor-info">
+                            <div class="visitor-name">Delivery Express</div>
+                            <div class="visitor-details">
+                                <span class="visitor-unit">Entrega Apt 102-C</span>
+                                <span class="visitor-time">hace 30 min</span>
+                            </div>
+                        </div>
+                        <div class="visitor-status">
+                            <span class="status-badge authorized">Autorizado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">Actualizado hace 1 min</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('daily-visitors')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget: Clima y Ambiente -->
+        <div class="widget-card metrics active" data-widget="weather-environment">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-cloud-sun text-yellow-400"></i>
+                    <span>Clima y Ambiente</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('weather-environment')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.refreshWidget('weather-environment')" title="Actualizar">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('weather-environment')" title="Ocultar">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="weather-main">
+                    <div class="weather-icon">
+                        <i class="fas fa-sun text-yellow-400 text-4xl"></i>
+                    </div>
+                    <div class="weather-info">
+                        <div class="weather-temp">24°C</div>
+                        <div class="weather-desc">Soleado</div>
+                        <div class="weather-location">Bogotá, Colombia</div>
+                    </div>
+                </div>
+                <div class="weather-details">
+                    <div class="weather-item">
+                        <i class="fas fa-eye text-blue-400"></i>
+                        <span class="weather-label">Visibilidad:</span>
+                        <span class="weather-value">10 km</span>
+                    </div>
+                    <div class="weather-item">
+                        <i class="fas fa-tint text-blue-400"></i>
+                        <span class="weather-label">Humedad:</span>
+                        <span class="weather-value">65%</span>
+                    </div>
+                    <div class="weather-item">
+                        <i class="fas fa-wind text-gray-400"></i>
+                        <span class="weather-label">Viento:</span>
+                        <span class="weather-value">12 km/h</span>
+                    </div>
+                    <div class="weather-item">
+                        <i class="fas fa-thermometer-half text-red-400"></i>
+                        <span class="weather-label">Sensación:</span>
+                        <span class="weather-value">26°C</span>
+                    </div>
+                </div>
+                <div class="environment-sensors">
+                    <div class="sensor-item">
+                        <div class="sensor-icon bg-green-500">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="sensor-data">
+                            <div class="sensor-label">Calidad del Aire</div>
+                            <div class="sensor-value">Buena</div>
+                        </div>
+                    </div>
+                    <div class="sensor-item">
+                        <div class="sensor-icon bg-blue-500">
+                            <i class="fas fa-water"></i>
+                        </div>
+                        <div class="sensor-data">
+                            <div class="sensor-label">Nivel Tanques</div>
+                            <div class="sensor-value">85%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">Actualizado hace 10 min</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('weather-environment')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget: Alertas y Notificaciones -->
+        <div class="widget-card metrics active" data-widget="alerts-notifications">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-bell text-red-400"></i>
+                    <span>Alertas y Notificaciones</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('alerts-notifications')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.refreshWidget('alerts-notifications')" title="Actualizar">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('alerts-notifications')" title="Ocultar">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="alerts-summary">
+                    <div class="alert-count critical">
+                        <div class="count-number">2</div>
+                        <div class="count-label">Críticas</div>
+                    </div>
+                    <div class="alert-count warning">
+                        <div class="count-number">5</div>
+                        <div class="count-label">Advertencias</div>
+                    </div>
+                    <div class="alert-count info">
+                        <div class="count-number">12</div>
+                        <div class="count-label">Informativas</div>
+                    </div>
+                </div>
+                <div class="alerts-list">
+                    <div class="alert-item critical">
+                        <div class="alert-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="alert-content">
+                            <div class="alert-title">Falla en sistema de bombeo</div>
+                            <div class="alert-time">hace 30 min</div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="btn-xs btn-primary" title="Ver detalles">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-xs btn-success" title="Resolver">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="alert-item warning">
+                        <div class="alert-icon">
+                            <i class="fas fa-exclamation"></i>
+                        </div>
+                        <div class="alert-content">
+                            <div class="alert-title">Nivel bajo en tanque de reserva</div>
+                            <div class="alert-time">hace 1 hora</div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="btn-xs btn-primary" title="Ver detalles">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-xs btn-success" title="Resolver">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="alert-item info">
+                        <div class="alert-icon">
+                            <i class="fas fa-info"></i>
+                        </div>
+                        <div class="alert-content">
+                            <div class="alert-title">Mantenimiento programado completado</div>
+                            <div class="alert-time">hace 2 horas</div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="btn-xs btn-primary" title="Ver detalles">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-xs btn-secondary" title="Archivar">
+                                <i class="fas fa-archive"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">Actualizado hace 30s</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('alerts-notifications')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget: Actividad del Sistema -->
+        <div class="widget-card metrics active" data-widget="system-activity">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-chart-area text-indigo-400"></i>
+                    <span>Actividad del Sistema</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('system-activity')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.refreshWidget('system-activity')" title="Actualizar">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('system-activity')" title="Ocultar">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="activity-metrics">
+                    <div class="activity-metric">
+                        <div class="metric-icon bg-blue-500">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="metric-data">
+                            <div class="metric-number">156</div>
+                            <div class="metric-label">Usuarios Activos</div>
+                        </div>
+                    </div>
+                    <div class="activity-metric">
+                        <div class="metric-icon bg-green-500">
+                            <i class="fas fa-mouse-pointer"></i>
+                        </div>
+                        <div class="metric-data">
+                            <div class="metric-number">2,847</div>
+                            <div class="metric-label">Acciones Hoy</div>
+                        </div>
+                    </div>
+                    <div class="activity-metric">
+                        <div class="metric-icon bg-purple-500">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="metric-data">
+                            <div class="metric-number">99.8%</div>
+                            <div class="metric-label">Uptime</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="activity-chart">
+                    <canvas id="activity-chart" width="300" height="120"></canvas>
+                </div>
+                <div class="recent-activity">
+                    <div class="activity-item">
+                        <div class="activity-time">14:30</div>
+                        <div class="activity-desc">Usuario admin inició sesión</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">14:25</div>
+                        <div class="activity-desc">Nuevo pago registrado - Apt 501-A</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">14:20</div>
+                        <div class="activity-desc">Orden de mantenimiento creada</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">Actualizado hace 30s</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('system-activity')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Widget: Calendario de Eventos -->
+        <div class="widget-card operational inactive" data-widget="events-calendar">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-calendar-alt text-pink-400"></i>
+                    <span>Calendario de Eventos</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('events-calendar')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.refreshWidget('events-calendar')" title="Actualizar">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('events-calendar')" title="Mostrar">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="calendar-mini">
+                    <div class="calendar-header">
+                        <button class="calendar-nav-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="calendar-month">Noviembre 2024</div>
+                        <button class="calendar-nav-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="calendar-day-header">D</div>
+                        <div class="calendar-day-header">L</div>
+                        <div class="calendar-day-header">M</div>
+                        <div class="calendar-day-header">M</div>
+                        <div class="calendar-day-header">J</div>
+                        <div class="calendar-day-header">V</div>
+                        <div class="calendar-day-header">S</div>
+                        
+                        <div class="calendar-day other-month">27</div>
+                        <div class="calendar-day other-month">28</div>
+                        <div class="calendar-day other-month">29</div>
+                        <div class="calendar-day other-month">30</div>
+                        <div class="calendar-day other-month">31</div>
+                        <div class="calendar-day">1</div>
+                        <div class="calendar-day">2</div>
+                        
+                        <div class="calendar-day">3</div>
+                        <div class="calendar-day">4</div>
+                        <div class="calendar-day">5</div>
+                        <div class="calendar-day">6</div>
+                        <div class="calendar-day">7</div>
+                        <div class="calendar-day">8</div>
+                        <div class="calendar-day">9</div>
+                        
+                        <div class="calendar-day">10</div>
+                        <div class="calendar-day">11</div>
+                        <div class="calendar-day">12</div>
+                        <div class="calendar-day">13</div>
+                        <div class="calendar-day">14</div>
+                        <div class="calendar-day today">15</div>
+                        <div class="calendar-day">16</div>
+                        
+                        <div class="calendar-day">17</div>
+                        <div class="calendar-day has-event">18</div>
+                        <div class="calendar-day">19</div>
+                        <div class="calendar-day has-event">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        <div class="calendar-day">23</div>
+                        
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day">29</div>
+                        <div class="calendar-day">30</div>
+                    </div>
+                </div>
+                <div class="upcoming-events">
+                    <h4 class="events-title">Próximos Eventos</h4>
+                    <div class="event-item">
+                        <div class="event-date">
+                            <div class="event-day">18</div>
+                            <div class="event-month">Nov</div>
+                        </div>
+                        <div class="event-info">
+                            <div class="event-name">Asamblea General</div>
+                            <div class="event-time">19:00 - Salón Social</div>
+                        </div>
+                    </div>
+                    <div class="event-item">
+                        <div class="event-date">
+                            <div class="event-day">20</div>
+                            <div class="event-month">Nov</div>
+                        </div>
+                        <div class="event-info">
+                            <div class="event-name">Mantenimiento Ascensores</div>
+                            <div class="event-time">08:00 - Todo el día</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">Actualizado hace 1 hora</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('events-calendar')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget: Consumo de Servicios -->
+        <div class="widget-card metrics inactive" data-widget="services-consumption">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-chart-line text-teal-400"></i>
+                    <span>Consumo de Servicios</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('services-consumption')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.refreshWidget('services-consumption')" title="Actualizar">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('services-consumption')" title="Mostrar">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="consumption-summary">
+                    <div class="consumption-item">
+                        <div class="consumption-icon bg-blue-500">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="consumption-data">
+                            <div class="consumption-label">Agua</div>
+                            <div class="consumption-value">2,450 m³</div>
+                            <div class="consumption-change positive">-5.2%</div>
+                        </div>
+                    </div>
+                    <div class="consumption-item">
+                        <div class="consumption-icon bg-yellow-500">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="consumption-data">
+                            <div class="consumption-label">Electricidad</div>
+                            <div class="consumption-value">18,750 kWh</div>
+                            <div class="consumption-change negative">+8.1%</div>
+                        </div>
+                    </div>
+                    <div class="consumption-item">
+                        <div class="consumption-icon bg-orange-500">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="consumption-data">
+                            <div class="consumption-label">Gas</div>
+                            <div class="consumption-value">1,250 m³</div>
+                            <div class="consumption-change positive">-2.8%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="consumption-chart">
+                    <canvas id="consumption-chart" width="300" height="150"></canvas>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">Actualizado hace 15 min</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('services-consumption')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget: Reservas de Espacios -->
+        <div class="widget-card operational inactive" data-widget="space-reservations">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-calendar-check text-emerald-400"></i>
+                    <span>Reservas de Espacios</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('space-reservations')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.refreshWidget('space-reservations')" title="Actualizar">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('space-reservations')" title="Mostrar">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="reservations-summary">
+                    <div class="reservation-stat">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Hoy</div>
+                    </div>
+                    <div class="reservation-stat">
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">Esta Semana</div>
+                    </div>
+                    <div class="reservation-stat">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Pendientes</div>
+                    </div>
+                </div>
+                <div class="reservations-list">
+                    <div class="reservation-item">
+                        <div class="reservation-time">
+                            <div class="time-hour">15:00</div>
+                            <div class="time-duration">2h</div>
+                        </div>
+                        <div class="reservation-info">
+                            <div class="reservation-space">Salón Social</div>
+                            <div class="reservation-user">María González - Apt 301-B</div>
+                        </div>
+                        <div class="reservation-status">
+                            <span class="status-badge confirmed">Confirmada</span>
+                        </div>
+                    </div>
+                    <div class="reservation-item">
+                        <div class="reservation-time">
+                            <div class="time-hour">18:00</div>
+                            <div class="time-duration">1h</div>
+                        </div>
+                        <div class="reservation-info">
+                            <div class="reservation-space">Cancha Múltiple</div>
+                            <div class="reservation-user">Carlos Rodríguez - Apt 205-A</div>
+                        </div>
+                        <div class="reservation-status">
+                            <span class="status-badge confirmed">Confirmada</span>
+                        </div>
+                    </div>
+                    <div class="reservation-item">
+                        <div class="reservation-time">
+                            <div class="time-hour">20:00</div>
+                            <div class="time-duration">3h</div>
+                        </div>
+                        <div class="reservation-info">
+                            <div class="reservation-space">BBQ Area</div>
+                            <div class="reservation-user">Ana Martínez - Apt 102-C</div>
+                        </div>
+                        <div class="reservation-status">
+                            <span class="status-badge pending">Pendiente</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">Actualizado hace 5 min</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('space-reservations')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget Personalizado: Notas Rápidas -->
+        <div class="widget-card custom inactive" data-widget="quick-notes">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-sticky-note text-amber-400"></i>
+                    <span>Notas Rápidas</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('quick-notes')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.addNote()" title="Nueva Nota">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('quick-notes')" title="Mostrar">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="notes-list">
+                    <div class="note-item priority-high">
+                        <div class="note-header">
+                            <div class="note-priority">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                            <div class="note-date">15 Nov</div>
+                        </div>
+                        <div class="note-content">
+                            <div class="note-title">Revisar presupuesto 2025</div>
+                            <div class="note-text">Preparar propuesta para la asamblea del próximo mes</div>
+                        </div>
+                        <div class="note-actions">
+                            <button class="note-action-btn" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="note-action-btn" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="note-item priority-normal">
+                        <div class="note-header">
+                            <div class="note-priority">
+                                <i class="fas fa-info"></i>
+                            </div>
+                            <div class="note-date">14 Nov</div>
+                        </div>
+                        <div class="note-content">
+                            <div class="note-title">Contactar proveedor pintura</div>
+                            <div class="note-text">Para mantenimiento fachada Torre B</div>
+                        </div>
+                        <div class="note-actions">
+                            <button class="note-action-btn" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="note-action-btn" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="note-item priority-low">
+                        <div class="note-header">
+                            <div class="note-priority">
+                                <i class="fas fa-minus"></i>
+                            </div>
+                            <div class="note-date">13 Nov</div>
+                        </div>
+                        <div class="note-content">
+                            <div class="note-title">Actualizar directorio residentes</div>
+                            <div class="note-text">Incluir nuevos propietarios</div>
+                        </div>
+                        <div class="note-actions">
+                            <button class="note-action-btn" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="note-action-btn" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="add-note-form" style="display: none;">
+                    <textarea class="note-textarea" placeholder="Escribe tu nota aquí..."></textarea>
+                    <div class="note-form-actions">
+                        <select class="note-priority-select">
+                            <option value="low">Baja</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="high">Alta</option>
+                        </select>
+                        <button class="btn-xs btn-primary" onclick="DashboardWidgets.saveNote()">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
+                        <button class="btn-xs btn-secondary" onclick="DashboardWidgets.cancelNote()">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">3 notas activas</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('quick-notes')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget: Enlaces Rápidos -->
+        <div class="widget-card custom inactive" data-widget="quick-links">
+            <div class="widget-header">
+                <div class="widget-title">
+                    <i class="fas fa-external-link-alt text-violet-400"></i>
+                    <span>Enlaces Rápidos</span>
+                </div>
+                <div class="widget-controls">
+                    <button class="widget-control-btn" onclick="DashboardWidgets.configureWidget('quick-links')" title="Configurar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.addLink()" title="Nuevo Enlace">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="widget-control-btn" onclick="DashboardWidgets.toggleWidget('quick-links')" title="Mostrar">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="quick-links-grid">
+                    <a href="#" class="quick-link-item" onclick="DashboardWidgets.openLink('residents')">
+                        <div class="link-icon bg-blue-500">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="link-label">Gestión Residentes</div>
+                    </a>
+                    <a href="#" class="quick-link-item" onclick="DashboardWidgets.openLink('payments')">
+                        <div class="link-icon bg-green-500">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="link-label">Pagos</div>
+                    </a>
+                    <a href="#" class="quick-link-item" onclick="DashboardWidgets.openLink('maintenance')">
+                        <div class="link-icon bg-yellow-500">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="link-label">Mantenimiento</div>
+                    </a>
+                    <a href="#" class="quick-link-item" onclick="DashboardWidgets.openLink('communications')">
+                        <div class="link-icon bg-purple-500">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="link-label">Comunicaciones</div>
+                    </a>
+                    <a href="#" class="quick-link-item" onclick="DashboardWidgets.openLink('reports')">
+                        <div class="link-icon bg-red-500">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="link-label">Reportes</div>
+                    </a>
+                    <a href="#" class="quick-link-item" onclick="DashboardWidgets.openLink('settings')">
+                        <div class="link-icon bg-gray-500">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div class="link-label">Configuración</div>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <span class="widget-update">6 enlaces configurados</span>
+                <button class="widget-expand-btn" onclick="DashboardWidgets.expandWidget('quick-links')">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de Configuración de Layout -->
+    <div class="layout-config-panel" id="layout-config-panel" style="display: none;">
+        <div class="config-panel-header">
+            <h3 class="config-panel-title">Personalizar Dashboard</h3>
+            <button class="config-panel-close" onclick="DashboardWidgets.closeLayoutConfig()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="config-panel-content">
+            <!-- Configuración de Grid -->
+            <div class="config-section">
+                <h4 class="config-section-title">Diseño del Grid</h4>
+                <div class="grid-options">
+                    <button class="grid-option active" data-columns="2">
+                        <div class="grid-preview">
+                            <div class="grid-col"></div>
+                            <div class="grid-col"></div>
+                        </div>
+                        <span>2 Columnas</span>
+                    </button>
+                    <button class="grid-option" data-columns="3">
+                        <div class="grid-preview">
+                            <div class="grid-col"></div>
+                            <div class="grid-col"></div>
+                            <div class="grid-col"></div>
+                        </div>
+                        <span>3 Columnas</span>
+                    </button>
+                    <button class="grid-option" data-columns="4">
+                        <div class="grid-preview">
+                            <div class="grid-col"></div>
+                            <div class="grid-col"></div>
+                            <div class="grid-col"></div>
+                            <div class="grid-col"></div>
+                        </div>
+                        <span>4 Columnas</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lista de Widgets Disponibles -->
+            <div class="config-section">
+                <h4 class="config-section-title">Widgets Disponibles</h4>
+                <div class="available-widgets">
+                    <div class="widget-option active" data-widget="financial-summary">
+                        <div class="widget-option-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="widget-option-info">
+                            <div class="widget-option-name">Resumen Financiero</div>
+                            <div class="widget-option-desc">Ingresos, gastos y balance</div>
+                        </div>
+                        <div class="widget-option-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="widget-option active" data-widget="unit-occupancy">
+                        <div class="widget-option-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="widget-option-info">
+                            <div class="widget-option-name">Ocupación de Unidades</div>
+                            <div class="widget-option-desc">Estado de ocupación por torres</div>
+                        </div>
+                        <div class="widget-option-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="widget-option active" data-widget="maintenance-orders">
+                        <div class="widget-option-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="widget-option-info">
+                            <div class="widget-option-name">Órdenes de Mantenimiento</div>
+                            <div class="widget-option-desc">Estado de órdenes de trabajo</div>
+                        </div>
+                        <div class="widget-option-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="widget-option active" data-widget="recent-payments">
+                        <div class="widget-option-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="widget-option-info">
+                            <div class="widget-option-name">Pagos Recientes</div>
+                            <div class="widget-option-desc">Últimos pagos recibidos</div>
+                        </div>
+                        <div class="widget-option-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="widget-option inactive" data-widget="events-calendar">
+                        <div class="widget-option-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="widget-option-info">
+                            <div class="widget-option-name">Calendario de Eventos</div>
+                            <div class="widget-option-desc">Eventos y fechas importantes</div>
+                        </div>
+                        <div class="widget-option-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="widget-option inactive" data-widget="services-consumption">
+                        <div class="widget-option-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="widget-option-info">
+                            <div class="widget-option-name">Consumo de Servicios</div>
+                            <div class="widget-option-desc">Agua, electricidad y gas</div>
+                        </div>
+                        <div class="widget-option-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuración de Actualización -->
+            <div class="config-section">
+                <h4 class="config-section-title">Actualización Automática</h4>
+                <div class="update-config">
+                    <div class="config-item">
+                        <label class="config-label">Frecuencia de actualización:</label>
+                        <select class="config-select">
+                            <option value="15">15 segundos</option>
+                            <option value="30" selected>30 segundos</option>
+                            <option value="60">1 minuto</option>
+                            <option value="300">5 minutos</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-checkbox">
+                            <input type="checkbox" checked>
+                            <span>Actualización automática habilitada</span>
+                        </label>
+                    </div>
+                    <div class="config-item">
+                        <label class="config-checkbox">
+                            <input type="checkbox">
+                            <span>Pausar actualización cuando no esté visible</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="config-panel-footer">
+            <button class="btn-secondary" onclick="DashboardWidgets.resetLayout()">
+                <i class="fas fa-undo mr-2"></i>Restablecer
+            </button>
+            <button class="btn-primary" onclick="DashboardWidgets.saveLayout()">
+                <i class="fas fa-save mr-2"></i>Guardar Cambios
+            </button>
+        </div>
+    </div>
+
+    <!-- Overlay para configuración -->
+    <div class="config-overlay" id="config-overlay" style="display: none;" onclick="DashboardWidgets.closeLayoutConfig()"></div>
+</div>
+
+<!-- Scripts del Módulo -->
+<script>
+class DashboardWidgets {
+    static widgets = new Map();
+    static updateInterval = null;
+    static currentLayout = 'grid-3';
+
+    static init() {
+        this.setupEventListeners();
+        this.loadWidgetConfigurations();
+        this.startAutoUpdate();
+        this.setupDragAndDrop();
+        this.initializeCharts();
+    }
+
+    static setupEventListeners() {
+        // Category navigation
+        const categoryButtons = document.querySelectorAll('.category-button');
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.dataset.category;
+                this.filterWidgetsByCategory(category);
+                
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+
+        // Grid options
+        const gridOptions = document.querySelectorAll('.grid-option');
+        gridOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const columns = option.dataset.columns;
+                this.changeGridLayout(columns);
+                
+                gridOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+            });
+        });
+
+        // Widget toggles
+        const widgetToggles = document.querySelectorAll('.widget-option-toggle input');
+        widgetToggles.forEach(toggle => {
+            toggle.addEventListener('change', (e) => {
+                const widgetOption = e.target.closest('.widget-option');
+                const widgetId = widgetOption.dataset.widget;
+                this.toggleWidgetVisibility(widgetId, e.target.checked);
+            });
+        });
+    }
+
+    static loadWidgetConfigurations() {
+        // Load saved widget configurations from localStorage
+        const savedConfig = localStorage.getItem('dashboard-widgets-config');
+        if (savedConfig) {
+            const config = JSON.parse(savedConfig);
+            this.applyConfiguration(config);
+        }
+    }
+
+    static startAutoUpdate() {
+        const updateFrequency = 30000; // 30 seconds
+        this.updateInterval = setInterval(() => {
+            this.updateAllWidgets();
+        }, updateFrequency);
+    }
+
+    static setupDragAndDrop() {
+        const widgetCards = document.querySelectorAll('.widget-card');
+        widgetCards.forEach(card => {
+            card.draggable = true;
+            card.addEventListener('dragstart', this.handleDragStart);
+            card.addEventListener('dragover', this.handleDragOver);
+            card.addEventListener('drop', this.handleDrop);
+            card.addEventListener('dragend', this.handleDragEnd);
+        });
+    }
+
+    static initializeCharts() {
+        // Initialize Chart.js charts for widgets
+        this.initFinancialChart();
+        this.initActivityChart();
+        this.initConsumptionChart();
+    }
+
+    static initFinancialChart() {
+        const ctx = document.getElementById('financial-chart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Ingresos',
+                        data: [120, 125, 118, 130, 128, 125],
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Gastos',
+                        data: [80, 75, 85, 78, 82, 78],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            display: false
+                        },
+                        x: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    static initActivityChart() {
+        const ctx = document.getElementById('activity-chart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'area',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                    datasets: [{
+                        label: 'Actividad',
+                        data: [20, 15, 45, 80, 95, 70, 35],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            display: false
+                        },
+                        x: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    static initConsumptionChart() {
+        const ctx = document.getElementById('consumption-chart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Agua', 'Electricidad', 'Gas'],
+                    datasets: [{
+                        data: [2450, 18750, 1250],
+                        backgroundColor: ['#3b82f6', '#fbbf24', '#f97316']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            display: false
+                        },
+                        x: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    static filterWidgetsByCategory(category) {
+        const widgets = document.querySelectorAll('.widget-card');
+        widgets.forEach(widget => {
+            if (category === 'all' || widget.classList.contains(category)) {
+                widget.style.display = 'block';
+            } else {
+                widget.style.display = 'none';
+            }
+        });
+    }
+
+    static changeGridLayout(columns) {
+        const widgetsGrid = document.querySelector('.widgets-grid');
+        widgetsGrid.className = 'widgets-grid';
+        widgetsGrid.classList.add(`grid-${columns}`);
+        this.currentLayout = `grid-${columns}`;
+    }
+
+    static toggleWidgetVisibility(widgetId, visible) {
+        const widget = document.querySelector(`[data-widget="${widgetId}"]`);
+        const widgetOption = document.querySelector(`.widget-option[data-widget="${widgetId}"]`);
+        
+        if (visible) {
+            widget.classList.remove('inactive');
+            widget.classList.add('active');
+            widgetOption.classList.remove('inactive');
+            widgetOption.classList.add('active');
+        } else {
+            widget.classList.remove('active');
+            widget.classList.add('inactive');
+            widgetOption.classList.remove('active');
+            widgetOption.classList.add('inactive');
+        }
+    }
+
+    static updateAllWidgets() {
+        const activeWidgets = document.querySelectorAll('.widget-card.active');
+        activeWidgets.forEach(widget => {
+            const widgetId = widget.dataset.widget;
+            this.updateWidget(widgetId);
+        });
+    }
+
+    static updateWidget(widgetId) {
+        // Simulate widget update
+        const widget = document.querySelector(`[data-widget="${widgetId}"]`);
+        const updateSpan = widget.querySelector('.widget-update');
+        if (updateSpan) {
+            updateSpan.textContent = 'Actualizado hace 30s';
+        }
+        
+        // Add update animation
+        widget.classList.add('updating');
+        setTimeout(() => {
+            widget.classList.remove('updating');
+        }, 1000);
+    }
+
+    // Drag and Drop handlers
+    static handleDragStart(e) {
+        e.dataTransfer.setData('text/plain', e.target.dataset.widget);
+        e.target.classList.add('dragging');
+    }
+
+    static handleDragOver(e) {
+        e.preventDefault();
+    }
+
+    static handleDrop(e) {
+        e.preventDefault();
+        const draggedWidgetId = e.dataTransfer.getData('text/plain');
+        const targetWidget = e.target.closest('.widget-card');
+        
+        if (targetWidget && draggedWidgetId !== targetWidget.dataset.widget) {
+            const draggedWidget = document.querySelector(`[data-widget="${draggedWidgetId}"]`);
+            const parent = targetWidget.parentNode;
+            
+            // Swap positions
+            const nextSibling = targetWidget.nextSibling;
+            parent.insertBefore(draggedWidget, targetWidget);
+            parent.insertBefore(targetWidget, nextSibling);
+        }
+    }
+
+    static handleDragEnd(e) {
+        e.target.classList.remove('dragging');
+    }
+
+    // Event handlers
+    static addWidget() {
+        console.log('Agregando nuevo widget...');
+    }
+
+    static customizeLayout() {
+        document.getElementById('layout-config-panel').style.display = 'block';
+        document.getElementById('config-overlay').style.display = 'block';
+    }
+
+    static closeLayoutConfig() {
+        document.getElementById('layout-config-panel').style.display = 'none';
+        document.getElementById('config-overlay').style.display = 'none';
+    }
+
+    static configureWidget(widgetId) {
+        console.log('Configurando widget:', widgetId);
+    }
+
+    static refreshWidget(widgetId) {
+        this.updateWidget(widgetId);
+    }
+
+    static toggleWidget(widgetId) {
+        const widget = document.querySelector(`[data-widget="${widgetId}"]`);
+        const isActive = widget.classList.contains('active');
+        this.toggleWidgetVisibility(widgetId, !isActive);
+    }
+
+    static expandWidget(widgetId) {
+        console.log('Expandiendo widget:', widgetId);
+    }
+
+    static addNote() {
+        const form = document.querySelector('.add-note-form');
+        form.style.display = 'block';
+        form.querySelector('.note-textarea').focus();
+    }
+
+    static saveNote() {
+        const textarea = document.querySelector('.note-textarea');
+        const priority = document.querySelector('.note-priority-select').value;
+        
+        if (textarea.value.trim()) {
+            // Add note to list
+            console.log('Guardando nota:', textarea.value, 'Prioridad:', priority);
+            textarea.value = '';
+            document.querySelector('.add-note-form').style.display = 'none';
+        }
+    }
+
+    static cancelNote() {
+        document.querySelector('.note-textarea').value = '';
+        document.querySelector('.add-note-form').style.display = 'none';
+    }
+
+    static addLink() {
+        console.log('Agregando nuevo enlace...');
+    }
+
+    static openLink(linkType) {
+        console.log('Abriendo enlace:', linkType);
+    }
+
+    static resetLayout() {
+        if (confirm('¿Está seguro de restablecer el layout a la configuración por defecto?')) {
+            localStorage.removeItem('dashboard-widgets-config');
+            location.reload();
+        }
+    }
+
+    static saveLayout() {
+        const config = {
+            layout: this.currentLayout,
+            widgets: this.getWidgetStates(),
+            updateFrequency: document.querySelector('.config-select').value
+        };
+        
+        localStorage.setItem('dashboard-widgets-config', JSON.stringify(config));
+        this.closeLayoutConfig();
+        
+        // Show success message
+        console.log('Configuración guardada exitosamente');
+    }
+
+    static getWidgetStates() {
+        const states = {};
+        const widgets = document.querySelectorAll('.widget-card');
+        widgets.forEach(widget => {
+            const widgetId = widget.dataset.widget;
+            states[widgetId] = {
+                active: widget.classList.contains('active'),
+                position: Array.from(widget.parentNode.children).indexOf(widget)
+            };
+        });
+        return states;
+    }
+
+    static applyConfiguration(config) {
+        if (config.layout) {
+            const columns = config.layout.replace('grid-', '');
+            this.changeGridLayout(columns);
+        }
+        
+        if (config.widgets) {
+            Object.entries(config.widgets).forEach(([widgetId, state]) => {
+                this.toggleWidgetVisibility(widgetId, state.active);
+            });
+        }
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('dashboard-widgets-module')) {
+        DashboardWidgets.init();
+    }
+});
+</script>
+
+<!-- Estilos específicos del módulo -->
+<style>
+/* Widgets Status Bar */
+.widgets-status-bar {
+    animation: pulse-glow-indigo 3s infinite;
+}
+
+@keyframes pulse-glow-indigo {
+    0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+    50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
+}
+
+.widgets-indicator {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(99, 102, 241, 0.2);
+    border: 2px solid #6366f1;
+}
+
+.widgets-indicator.active {
+    animation: pulse 2s infinite;
+}
+
+/* Widget Categories */
+.widget-categories {
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+.category-button {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.5rem;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.category-button:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: #6366f1;
+    color: #a5b4fc;
+}
+
+.category-button.active {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: white;
+}
+
+/* Widgets Grid */
+.widgets-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+}
+
+.widgets-grid.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.widgets-grid.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.widgets-grid.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* Widget Cards */
+.widget-card {
+    background: rgba(51, 65, 85, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.widget-card:hover {
+    border-color: #6366f1;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.widget-card.inactive {
+    opacity: 0.5;
+    display: none;
+}
+
+.widget-card.dragging {
+    opacity: 0.7;
+    transform: rotate(5deg);
+}
+
+.widget-card.updating {
+    border-color: #fbbf24;
+    animation: pulse-update 1s ease-in-out;
+}
+
+@keyframes pulse-update {
+    0%, 100% { border-color: #fbbf24; }
+    50% { border-color: rgba(251, 191, 36, 0.5); }
+}
+
+/* Widget Header */
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: rgba(30, 41, 59, 0.5);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.widget-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: white;
+}
+
+.widget-controls {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.widget-control-btn {
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.widget-control-btn:hover {
+    background: rgba(99, 102, 241, 0.3);
+    color: white;
+}
+
+/* Widget Content */
+.widget-content {
+    padding: 1.5rem;
+}
+
+/* Widget Footer */
+.widget-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background: rgba(15, 23, 42, 0.5);
+    border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.widget-update {
+    color: #6b7280;
+    font-size: 0.75rem;
+}
+
+.widget-expand-btn {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.widget-expand-btn:hover {
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+}
+
+/* Financial Summary Widget */
+.financial-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.summary-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+.summary-data {
+    flex: 1;
+}
+
+.summary-label {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.summary-value {
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.summary-change {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.summary-change.positive {
+    color: #22c55e;
+}
+
+.summary-change.negative {
+    color: #ef4444;
+}
+
+.widget-chart {
+    height: 150px;
+    position: relative;
+}
+
+/* Occupancy Widget */
+.occupancy-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.occupancy-circle {
+    flex-shrink: 0;
+}
+
+.circle-progress {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(#6366f1 0deg 313deg, rgba(107, 114, 128, 0.3) 313deg 360deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.circle-progress::before {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: #1e293b;
+    border-radius: 50%;
+}
+
+.circle-inner {
+    text-align: center;
+    z-index: 1;
+}
+
+.circle-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.circle-label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.occupancy-details {
+    flex: 1;
+    space-y: 0.5rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.detail-label {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.detail-value {
+    color: white;
+    font-weight: 600;
+}
+
+.towers-breakdown {
+    space-y: 0.75rem;
+}
+
+.tower-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.tower-name {
+    color: white;
+    font-weight: 500;
+    min-width: 60px;
+}
+
+.tower-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(107, 114, 128, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.tower-fill {
+    height: 100%;
+    background: #6366f1;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.tower-percentage {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: right;
+}
+
+/* Maintenance Widget */
+.maintenance-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.maintenance-stat {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+    position: relative;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-icon {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.75rem;
+}
+
+.maintenance-list {
+    space-y: 1rem;
+}
+
+.maintenance-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.maintenance-item.urgent {
+    border-left: 4px solid #ef4444;
+}
+
+.maintenance-item.high {
+    border-left: 4px solid #f59e0b;
+}
+
+.maintenance-item.normal {
+    border-left: 4px solid #22c55e;
+}
+
+.maintenance-priority {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+}
+
+.maintenance-item.urgent .maintenance-priority {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.maintenance-item.high .maintenance-priority {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.maintenance-item.normal .maintenance-priority {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.maintenance-info {
+    flex: 1;
+}
+
+.maintenance-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.maintenance-time {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.maintenance-status {
+    text-align: right;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-badge.urgent {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.status-badge.high {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.status-badge.normal {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.status-badge.confirmed {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.status-badge.pending {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.status-badge.authorized {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.status-badge.delivered {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+/* Payments Widget */
+.payments-summary {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.payment-total {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.total-amount {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+}
+
+.total-label {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.total-change {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.total-change.positive {
+    color: #22c55e;
+}
+
+.payments-list {
+    space-y: 1rem;
+}
+
+.payment-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.payment-info {
+    flex: 1;
+}
+
+.payment-unit {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.payment-concept {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.payment-time {
+    color: #6b7280;
+    font-size: 0.75rem;
+}
+
+.payment-amount {
+    color: #22c55e;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.payment-method {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+/* Communications Widget */
+.communications-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.comm-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.comm-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.875rem;
+}
+
+.comm-data {
+    text-align: center;
+}
+
+.comm-number {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: white;
+}
+
+.comm-label {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.communications-list {
+    space-y: 1rem;
+}
+
+.communication-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.comm-type {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.875rem;
+}
+
+.comm-type.email {
+    background: #3b82f6;
+}
+
+.comm-type.whatsapp {
+    background: #25d366;
+}
+
+.comm-type.sms {
+    background: #fbbf24;
+}
+
+.comm-content {
+    flex: 1;
+}
+
+.comm-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.comm-details {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.comm-status {
+    text-align: right;
+}
+
+/* Visitors Widget */
+.visitors-summary {
+    margin-bottom: 1.5rem;
+}
+
+.visitor-count {
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.count-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.count-label {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.count-change {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.count-change.positive {
+    color: #22c55e;
+}
+
+.visitor-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.visitor-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    backgroun
+.visitor-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 0.375rem;
+}
+
+.stat-label {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.stat-value {
+    color: white;
+    font-weight: 600;
+}
+
+.visitors-list {
+    space-y: 1rem;
+}
+
+.visitor-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.visitor-item.pending {
+    border-left: 4px solid #f59e0b;
+}
+
+.visitor-item.authorized {
+    border-left: 4px solid #22c55e;
+}
+
+.visitor-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a5b4fc;
+    font-size: 1rem;
+}
+
+.visitor-info {
+    flex: 1;
+}
+
+.visitor-name {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.visitor-details {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.visitor-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.visitor-status {
+    text-align: right;
+}
+
+/* Weather Widget */
+.weather-main {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.weather-icon {
+    flex-shrink: 0;
+}
+
+.weather-info {
+    flex: 1;
+}
+
+.weather-temp {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.weather-desc {
+    color: #94a3b8;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.weather-location {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.weather-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.weather-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 0.375rem;
+}
+
+.weather-label {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.weather-value {
+    color: white;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.environment-sensors {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.sensor-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.sensor-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.875rem;
+}
+
+.sensor-data {
+    text-align: center;
+}
+
+.sensor-label {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.sensor-value {
+    color: white;
+    font-weight: 600;
+}
+
+/* Alerts Widget */
+.alerts-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.alert-count {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.alert-count.critical {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.alert-count.warning {
+    background: rgba(245, 158, 11, 0.2);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.alert-count.info {
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.alerts-list {
+    space-y: 1rem;
+}
+
+.alert-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.alert-item.critical {
+    border-left: 4px solid #ef4444;
+}
+
+.alert-item.warning {
+    border-left: 4px solid #f59e0b;
+}
+
+.alert-item.info {
+    border-left: 4px solid #3b82f6;
+}
+
+.alert-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+}
+
+.alert-item.critical .alert-icon {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.alert-item.warning .alert-icon {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.alert-item.info .alert-icon {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.alert-time {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.alert-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Activity Widget */
+.activity-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.activity-metric {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.metric-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.875rem;
+}
+
+.metric-data {
+    text-align: center;
+}
+
+.metric-number {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: white;
+}
+
+.metric-label {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.activity-chart {
+    height: 120px;
+    margin-bottom: 1.5rem;
+}
+
+.recent-activity {
+    space-y: 0.75rem;
+}
+
+.activity-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 0.375rem;
+}
+
+.activity-time {
+    color: #6b7280;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 40px;
+}
+
+.activity-desc {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+/* Calendar Widget */
+.calendar-mini {
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.calendar-nav-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.calendar-nav-btn:hover {
+    color: white;
+    background: rgba(99, 102, 241, 0.2);
+}
+
+.calendar-month {
+    color: white;
+    font-weight: 600;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: rgba(148, 163, 184, 0.2);
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.calendar-day-header {
+    background: rgba(30, 41, 59, 0.8);
+    padding: 0.5rem;
+    text-align: center;
+    font-weight: 600;
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.calendar-day {
+    background: rgba(51, 65, 85, 0.8);
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-day:hover {
+    background: rgba(99, 102, 241, 0.3);
+}
+
+.calendar-day.other-month {
+    opacity: 0.3;
+}
+
+.calendar-day.today {
+    background: #6366f1;
+    color: white;
+    font-weight: 600;
+}
+
+.calendar-day.has-event {
+    background: rgba(34, 197, 94, 0.2);
+}
+
+.calendar-day.has-event::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 4px;
+    height: 4px;
+    background: #22c55e;
+    border-radius: 50%;
+}
+
+.upcoming-events {
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.events-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.event-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 0.375rem;
+    margin-bottom: 0.75rem;
+}
+
+.event-date {
+    text-align: center;
+    min-width: 3rem;
+}
+
+.event-day {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: white;
+}
+
+.event-month {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.event-info {
+    flex: 1;
+}
+
+.event-name {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.event-time {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+/* Consumption Widget */
+.consumption-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.consumption-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.consumption-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.875rem;
+}
+
+.consumption-data {
+    text-align: center;
+}
+
+.consumption-label {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.consumption-value {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.consumption-change {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.consumption-change.positive {
+    color: #22c55e;
+}
+
+.consumption-change.negative {
+    color: #ef4444;
+}
+
+.consumption-chart {
+    height: 150px;
+}
+
+/* Reservations Widget */
+.reservations-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.reservation-stat {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.reservations-list {
+    space-y: 1rem;
+}
+
+.reservation-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.reservation-time {
+    text-align: center;
+    min-width: 4rem;
+}
+
+.time-hour {
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: white;
+}
+
+.time-duration {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.reservation-info {
+    flex: 1;
+}
+
+.reservation-space {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.reservation-user {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.reservation-status {
+    text-align: right;
+}
+
+/* Notes Widget */
+.notes-list {
+    space-y: 1rem;
+}
+
+.note-item {
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.note-item.priority-high {
+    border-left: 4px solid #ef4444;
+}
+
+.note-item.priority-normal {
+    border-left: 4px solid #3b82f6;
+}
+
+.note-item.priority-low {
+    border-left: 4px solid #22c55e;
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.note-priority {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+.note-item.priority-high .note-priority {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.note-item.priority-normal .note-priority {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.note-item.priority-low .note-priority {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.note-date {
+    color: #6b7280;
+    font-size: 0.75rem;
+}
+
+.note-content {
+    margin-bottom: 0.75rem;
+}
+
+.note-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.note-text {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.note-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.note-action-btn {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.note-action-btn:hover {
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.add-note-form {
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.note-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.75rem;
+    background: rgba(51, 65, 85, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 0.375rem;
+    color: white;
+    resize: vertical;
+    margin-bottom: 1rem;
+}
+
+.note-textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+}
+
+.note-form-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.note-priority-select {
+    padding: 0.5rem;
+    background: rgba(51, 65, 85, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 0.375rem;
+    color: white;
+    margin-right: auto;
+}
+
+/* Quick Links Widget */
+.quick-links-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.quick-link-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.quick-link-item:hover {
+    background: rgba(99, 102, 241, 0.2);
+    transform: translateY(-2px);
+}
+
+.link-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+}
+
+.link-label {
+    color: white;
+    font-weight: 500;
+    text-align: center;
+    font-size: 0.875rem;
+}
+
+/* Layout Configuration Panel */
+.layout-config-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border-left: 1px solid rgba(148, 163, 184, 0.2);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.config-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.config-panel-title {
+    color: white;
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.config-panel-close {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.config-panel-close:hover {
+    color: white;
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.config-panel-content {
+    padding: 1.5rem;
+}
+
+.config-section {
+    margin-bottom: 2rem;
+}
+
+.config-section-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.grid-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+
+.grid-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: rgba(51, 65, 85, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #94a3b8;
+}
+
+.grid-option:hover {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.grid-option.active {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.2);
+    color: white;
+}
+
+.grid-preview {
+    display: flex;
+    gap: 2px;
+    height: 20px;
+}
+
+.grid-col {
+    width: 8px;
+    background: currentColor;
+    border-radius: 1px;
+}
+
+.available-widgets {
+    space-y: 0.75rem;
+}
+
+.widget-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(51, 65, 85, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.widget-option.active {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.widget-option.inactive {
+    opacity: 0.6;
+}
+
+.widget-option-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    background: rgba(99, 102, 241, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a5b4fc;
+    font-size: 1rem;
+}
+
+.widget-option-info {
+    flex: 1;
+}
+
+.widget-option-name {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.widget-option-desc {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.widget-option-toggle {
+    flex-shrink: 0;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 3rem;
+    height: 1.5rem;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #374151;
+    transition: 0.4s;
+    border-radius: 1.5rem;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 1.125rem;
+    width: 1.125rem;
+    left: 0.1875rem;
+    bottom: 0.1875rem;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #6366f1;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(1.5rem);
+}
+
+.update-config {
+    space-y: 1rem;
+}
+
+.config-item {
+    margin-bottom: 1rem;
+}
+
+.config-label {
+    display: block;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.config-select {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(51, 65, 85, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 0.375rem;
+    color: white;
+}
+
+.config-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #94a3b8;
+    cursor: pointer;
+}
+
+.config-panel-footer {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.config-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Responsive Design */
+@media (max-width: 1536px) {
+    .widgets-grid.grid-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1280px) {
+    .widgets-grid.grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .widgets-grid.grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .widgets-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .financial-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .maintenance-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .communications-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .activity-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .layout-config-panel {
+        width: 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .widgets-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .occupancy-stats {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .weather-main {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .weather-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .environment-sensors {
+        grid-template-columns: 1fr;
+    }
+    
+    .alerts-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .consumption-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .reservations-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-links-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .layout-config-panel {
+        width: 100%;
+        right: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .widget-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .widget-controls {
+        justify-content: center;
+    }
+    
+    .summary-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .maintenance-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .payment-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .communication-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .visitor-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .alert-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .reservation-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .quick-links-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .widget-controls,
+    .widget-expand-btn,
+    .layout-config-panel,
+    .config-overlay {
+        display: none !important;
+    }
+    
+    .widget-card {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+        break-inside: avoid;
+        margin-bottom: 1rem;
+    }
+    
+    .widgets-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem;
+    }
+}
+
+/* Accessibility */
+.widget-card:focus,
+.quick-link-item:focus,
+.grid-option:focus,
+.widget-option:focus {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+.widget-control-btn:focus,
+.note-action-btn:focus,
+.calendar-nav-btn:focus {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .widget-card {
+        border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    .widget-header {
+        border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .widget-card,
+    .quick-link-item,
+    .grid-option,
+    .widget-option {
+        transition: none;
+    }
+    
+    .widgets-indicator.active {
+        animation: none;
+    }
+    
+    .widget-card.updating {
+        animation: none;
+    }
+}
+
+/* Dark Mode Enhancements */
+@media (prefers-color-scheme: dark) {
+    .layout-config-panel {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+}
+
+/* Custom Scrollbars */
+.layout-config-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.layout-config-panel::-webkit-scrollbar-track {
+    background: rgba(71, 85, 105, 0.3);
+}
+
+.layout-config-panel::-webkit-scrollbar-thumb {
+    background: #6366f1;
+    border-radius: 3px;
+}
+
+.layout-config-panel::-webkit-scrollbar-thumb:hover {
+    background: #4f46e5;
+}
+
+/* Loading States */
+.widget-card.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.widget-card.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #6366f1;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.widget-card {
+    animation: fadeIn 0.3s ease when entering;
+}
+
+/* Hover Effects */
+.widget-card:hover .widget-title {
+    color: #a5b4fc;
+}
+
+.quick-link-item:hover .link-label {
+    color: #a5b4fc;
+}
+
+/* Interactive Elements */
+.calendar-day:hover {
+    transform: scale(1.05);
+}
+
+.note-action-btn:hover {
+    transform: scale(1.1);
+}
+
+.widget-control-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Success States */
+.widget-card.success {
+    border-color: #22c55e;
+    animation: success-pulse 2s ease-in-out;
+}
+
+@keyframes success-pulse {
+    0%, 100% { border-color: #22c55e; }
+    50% { border-color: rgba(34, 197, 94, 0.5); }
+}
+
+/* Error States */
+.widget-card.error {
+    border-color: #ef4444;
+    animation: error-shake 0.5s ease-in-out;
+}
+
+@keyframes error-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Notification Badges */
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Performance Optimizations */
+.will-change-transform {
+    will-change: transform;
+}
+
+.will-change-opacity {
+    will-change: opacity;
+}
+</style>

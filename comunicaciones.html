@@ -1,0 +1,4786 @@
+<!-- CondoconnectAI - Módulo de Comunicaciones -->
+<!-- Sistema integral de comunicación multicanal para el condominio -->
+
+<div id="comunicaciones-module" class="module-container">
+    <!-- Header del Módulo -->
+    <div class="module-header">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-white flex items-center">
+                    <i class="fas fa-comments mr-3 text-blue-400"></i>
+                    Centro de Comunicaciones
+                </h1>
+                <p class="text-gray-400 mt-2">Sistema integral de comunicación multicanal y gestión de mensajes</p>
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="ComunicacionesModule.newMessage()" class="btn-primary">
+                    <i class="fas fa-plus mr-2"></i>Nuevo Mensaje
+                </button>
+                <button onclick="ComunicacionesModule.broadcastMessage()" class="btn-success">
+                    <i class="fas fa-bullhorn mr-2"></i>Mensaje Masivo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado de Comunicaciones -->
+    <div class="communications-status-bar mb-8">
+        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl">
+            <div class="flex items-center space-x-4">
+                <div class="communication-indicator active">
+                    <i class="fas fa-satellite-dish text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-lg">Estado: OPERATIVO</h3>
+                    <p class="text-blue-100 text-sm">156 mensajes enviados hoy • 94% entregados • Última actualización: hace 1 min</p>
+                </div>
+            </div>
+            <div class="flex space-x-6 text-white">
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="messages-sent">156</div>
+                    <div class="text-sm text-blue-100">Enviados Hoy</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="delivery-rate">94%</div>
+                    <div class="text-sm text-blue-100">Entregados</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="response-rate">67%</div>
+                    <div class="text-sm text-blue-100">Respuestas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Métricas de Comunicación -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="metric-card bg-gradient-to-r from-green-600 to-green-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-100 text-sm font-medium">Mensajes Leídos</p>
+                    <p class="text-3xl font-bold text-white" id="read-messages">142</p>
+                </div>
+                <div class="bg-green-500 bg-opacity-30 rounded-full p-3">
+                    <i class="fas fa-envelope-open text-green-100 text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-4">
+                <span class="text-green-200 text-sm">91% tasa de lectura</span>
+            </div>
+        </div>
+
+        <div class="metric-card bg-gradient-to-r from-purple-600 to-purple-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-100 text-sm font-medium">Respuestas</p>
+                    <p class="text-3xl font-bold text-white" id="responses-count">89</p>
+                </div>
+                <div class="bg-purple-500 bg-opacity-30 rounded-full p-3">
+                    <i class="fas fa-reply text-purple-100 text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-4">
+                <span class="text-purple-200 text-sm">57% tasa respuesta</span>
+            </div>
+        </div>
+
+        <div class="metric-card bg-gradient-to-r from-yellow-600 to-yellow-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-yellow-100 text-sm font-medium">Pendientes</p>
+                    <p class="text-3xl font-bold text-white" id="pending-messages">12</p>
+                </div>
+                <div class="bg-yellow-500 bg-opacity-30 rounded-full p-3">
+                    <i class="fas fa-clock text-yellow-100 text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-4">
+                <span class="text-yellow-200 text-sm">Promedio: 2.5 horas</span>
+            </div>
+        </div>
+
+        <div class="metric-card bg-gradient-to-r from-red-600 to-red-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-red-100 text-sm font-medium">Urgentes</p>
+                    <p class="text-3xl font-bold text-white" id="urgent-messages">3</p>
+                </div>
+                <div class="bg-red-500 bg-opacity-30 rounded-full p-3">
+                    <i class="fas fa-exclamation-triangle text-red-100 text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-4">
+                <span class="text-red-200 text-sm">Requieren atención</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navegación de Secciones -->
+    <div class="section-tabs mb-8">
+        <nav class="flex space-x-8">
+            <button class="tab-button active" data-section="inbox">
+                <i class="fas fa-inbox mr-2"></i>Bandeja de Entrada
+            </button>
+            <button class="tab-button" data-section="compose">
+                <i class="fas fa-edit mr-2"></i>Redactar
+            </button>
+            <button class="tab-button" data-section="broadcast">
+                <i class="fas fa-bullhorn mr-2"></i>Difusión
+            </button>
+            <button class="tab-button" data-section="templates">
+                <i class="fas fa-file-alt mr-2"></i>Plantillas
+            </button>
+            <button class="tab-button" data-section="notifications">
+                <i class="fas fa-bell mr-2"></i>Notificaciones
+            </button>
+            <button class="tab-button" data-section="analytics">
+                <i class="fas fa-chart-line mr-2"></i>Analytics
+            </button>
+        </nav>
+    </div>
+
+    <!-- Sección: Bandeja de Entrada -->
+    <div id="inbox-section" class="section-content active">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Lista de Mensajes -->
+            <div class="lg:col-span-2">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3 class="text-xl font-bold text-white">Bandeja de Entrada</h3>
+                        <div class="flex space-x-2">
+                            <button onclick="ComunicacionesModule.markAllRead()" class="btn-sm btn-secondary">
+                                <i class="fas fa-check-double mr-1"></i>Marcar Leídos
+                            </button>
+                            <button onclick="ComunicacionesModule.refreshInbox()" class="btn-sm btn-primary">
+                                <i class="fas fa-sync mr-1"></i>Actualizar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <!-- Filtros de Mensajes -->
+                        <div class="message-filters mb-6">
+                            <div class="flex flex-col md:flex-row gap-4">
+                                <div class="flex-1">
+                                    <input type="text" placeholder="Buscar mensajes..." class="input-field">
+                                </div>
+                                <div class="flex space-x-2">
+                                    <select class="input-field">
+                                        <option value="">Todos los tipos</option>
+                                        <option value="email">Email</option>
+                                        <option value="sms">SMS</option>
+                                        <option value="whatsapp">WhatsApp</option>
+                                        <option value="notification">Notificación</option>
+                                    </select>
+                                    <select class="input-field">
+                                        <option value="">Todos los estados</option>
+                                        <option value="unread">No leídos</option>
+                                        <option value="read">Leídos</option>
+                                        <option value="replied">Respondidos</option>
+                                        <option value="urgent">Urgentes</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lista de Mensajes -->
+                        <div class="messages-list">
+                            <div class="message-item unread urgent">
+                                <div class="message-header">
+                                    <div class="message-sender">
+                                        <div class="sender-avatar">
+                                            <img src="https://via.placeholder.com/40" alt="María González" class="w-10 h-10 rounded-full">
+                                        </div>
+                                        <div class="sender-info">
+                                            <h4 class="sender-name">María González</h4>
+                                            <p class="sender-unit">Torre A - Apartamento 1001</p>
+                                        </div>
+                                    </div>
+                                    <div class="message-meta">
+                                        <div class="message-type email">
+                                            <i class="fas fa-envelope"></i>
+                                        </div>
+                                        <div class="message-priority urgent">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                        <span class="message-time">hace 15 min</span>
+                                    </div>
+                                </div>
+                                <div class="message-content">
+                                    <h3 class="message-subject">Fuga de agua en mi apartamento - URGENTE</h3>
+                                    <p class="message-preview">Buenos días, tengo una fuga importante en el baño principal que está afectando el apartamento de abajo. Necesito ayuda inmediata...</p>
+                                    <div class="message-tags">
+                                        <span class="tag tag-urgent">Urgente</span>
+                                        <span class="tag tag-maintenance">Mantenimiento</span>
+                                    </div>
+                                </div>
+                                <div class="message-actions">
+                                    <button class="btn-xs btn-primary" onclick="ComunicacionesModule.openMessage('msg-001')">
+                                        <i class="fas fa-eye mr-1"></i>Leer
+                                    </button>
+                                    <button class="btn-xs btn-success" onclick="ComunicacionesModule.replyMessage('msg-001')">
+                                        <i class="fas fa-reply mr-1"></i>Responder
+                                    </button>
+                                    <button class="btn-xs btn-warning" onclick="ComunicacionesModule.forwardMessage('msg-001')">
+                                        <i class="fas fa-share mr-1"></i>Derivar
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="message-item read">
+                                <div class="message-header">
+                                    <div class="message-sender">
+                                        <div class="sender-avatar">
+                                            <img src="https://via.placeholder.com/40" alt="Carlos Rodríguez" class="w-10 h-10 rounded-full">
+                                        </div>
+                                        <div class="sender-info">
+                                            <h4 class="sender-name">Carlos Rodríguez</h4>
+                                            <p class="sender-unit">Torre A - Apartamento 1002</p>
+                                        </div>
+                                    </div>
+                                    <div class="message-meta">
+                                        <div class="message-type whatsapp">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </div>
+                                        <span class="message-time">hace 2 horas</span>
+                                    </div>
+                                </div>
+                                <div class="message-content">
+                                    <h3 class="message-subject">Consulta sobre horarios de piscina</h3>
+                                    <p class="message-preview">Hola, quisiera saber cuáles son los horarios disponibles para usar la piscina durante los fines de semana...</p>
+                                    <div class="message-tags">
+                                        <span class="tag tag-info">Información</span>
+                                        <span class="tag tag-amenities">Amenidades</span>
+                                    </div>
+                                </div>
+                                <div class="message-actions">
+                                    <button class="btn-xs btn-primary" onclick="ComunicacionesModule.openMessage('msg-002')">
+                                        <i class="fas fa-eye mr-1"></i>Leer
+                                    </button>
+                                    <button class="btn-xs btn-success" onclick="ComunicacionesModule.replyMessage('msg-002')">
+                                        <i class="fas fa-reply mr-1"></i>Responder
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="message-item unread">
+                                <div class="message-header">
+                                    <div class="message-sender">
+                                        <div class="sender-avatar">
+                                            <img src="https://via.placeholder.com/40" alt="Ana Martínez" class="w-10 h-10 rounded-full">
+                                        </div>
+                                        <div class="sender-info">
+                                            <h4 class="sender-name">Ana Martínez</h4>
+                                            <p class="sender-unit">Torre B - Apartamento 205</p>
+                                        </div>
+                                    </div>
+                                    <div class="message-meta">
+                                        <div class="message-type sms">
+                                            <i class="fas fa-sms"></i>
+                                        </div>
+                                        <span class="message-time">hace 4 horas</span>
+                                    </div>
+                                </div>
+                                <div class="message-content">
+                                    <h3 class="message-subject">Solicitud de autorización para visitante</h3>
+                                    <p class="message-preview">Necesito autorizar el ingreso de un técnico de aires acondicionados para mañana en la mañana...</p>
+                                    <div class="message-tags">
+                                        <span class="tag tag-authorization">Autorización</span>
+                                        <span class="tag tag-visitor">Visitante</span>
+                                    </div>
+                                </div>
+                                <div class="message-actions">
+                                    <button class="btn-xs btn-primary" onclick="ComunicacionesModule.openMessage('msg-003')">
+                                        <i class="fas fa-eye mr-1"></i>Leer
+                                    </button>
+                                    <button class="btn-xs btn-success" onclick="ComunicacionesModule.replyMessage('msg-003')">
+                                        <i class="fas fa-reply mr-1"></i>Responder
+                                    </button>
+                                    <button class="btn-xs btn-warning" onclick="ComunicacionesModule.approveVisitor('msg-003')">
+                                        <i class="fas fa-check mr-1"></i>Aprobar
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="message-item read replied">
+                                <div class="message-header">
+                                    <div class="message-sender">
+                                        <div class="sender-avatar">
+                                            <img src="https://via.placeholder.com/40" alt="Luis Pérez" class="w-10 h-10 rounded-full">
+                                        </div>
+                                        <div class="sender-info">
+                                            <h4 class="sender-name">Luis Pérez</h4>
+                                            <p class="sender-unit">Torre C - Apartamento 304</p>
+                                        </div>
+                                    </div>
+                                    <div class="message-meta">
+                                        <div class="message-type email">
+                                            <i class="fas fa-envelope"></i>
+                                        </div>
+                                        <div class="message-status replied">
+                                            <i class="fas fa-reply"></i>
+                                        </div>
+                                        <span class="message-time">ayer</span>
+                                    </div>
+                                </div>
+                                <div class="message-content">
+                                    <h3 class="message-subject">Felicitaciones por el nuevo sistema</h3>
+                                    <p class="message-preview">Quería felicitarlos por la implementación del nuevo sistema de comunicaciones. Es muy útil y fácil de usar...</p>
+                                    <div class="message-tags">
+                                        <span class="tag tag-feedback">Feedback</span>
+                                        <span class="tag tag-positive">Positivo</span>
+                                    </div>
+                                </div>
+                                <div class="message-actions">
+                                    <button class="btn-xs btn-primary" onclick="ComunicacionesModule.openMessage('msg-004')">
+                                        <i class="fas fa-eye mr-1"></i>Ver Conversación
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="message-item unread">
+                                <div class="message-header">
+                                    <div class="message-sender">
+                                        <div class="sender-avatar">
+                                            <div class="system-avatar">
+                                                <i class="fas fa-cog"></i>
+                                            </div>
+                                        </div>
+                                        <div class="sender-info">
+                                            <h4 class="sender-name">Sistema Automático</h4>
+                                            <p class="sender-unit">Notificación del Sistema</p>
+                                        </div>
+                                    </div>
+                                    <div class="message-meta">
+                                        <div class="message-type notification">
+                                            <i class="fas fa-bell"></i>
+                                        </div>
+                                        <span class="message-time">hace 6 horas</span>
+                                    </div>
+                                </div>
+                                <div class="message-content">
+                                    <h3 class="message-subject">Recordatorio: Asamblea General</h3>
+                                    <p class="message-preview">Recordatorio automático: La Asamblea General Ordinaria se realizará el próximo sábado 25 de noviembre...</p>
+                                    <div class="message-tags">
+                                        <span class="tag tag-reminder">Recordatorio</span>
+                                        <span class="tag tag-assembly">Asamblea</span>
+                                    </div>
+                                </div>
+                                <div class="message-actions">
+                                    <button class="btn-xs btn-primary" onclick="ComunicacionesModule.openMessage('msg-005')">
+                                        <i class="fas fa-eye mr-1"></i>Leer
+                                    </button>
+                                    <button class="btn-xs btn-secondary" onclick="ComunicacionesModule.markRead('msg-005')">
+                                        <i class="fas fa-check mr-1"></i>Marcar Leído
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paginación -->
+                        <div class="pagination mt-6">
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span class="pagination-info">Página 1 de 8 • Mostrando 5 de 89 mensajes</span>
+                            <button class="pagination-btn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Lateral -->
+            <div>
+                <!-- Acciones Rápidas -->
+                <div class="glass-card mb-6">
+                    <div class="card-header">
+                        <h3 class="text-xl font-bold text-white">Acciones Rápidas</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="quick-actions">
+                            <button onclick="ComunicacionesModule.newMessage()" class="quick-action-btn new-message">
+                                <i class="fas fa-plus mr-3"></i>
+                                <span>Nuevo Mensaje</span>
+                            </button>
+                            <button onclick="ComunicacionesModule.broadcastMessage()" class="quick-action-btn broadcast">
+                                <i class="fas fa-bullhorn mr-3"></i>
+                                <span>Mensaje Masivo</span>
+                            </button>
+                            <button onclick="ComunicacionesModule.sendNotification()" class="quick-action-btn notification">
+                                <i class="fas fa-bell mr-3"></i>
+                                <span>Notificación</span>
+                            </button>
+                            <button onclick="ComunicacionesModule.scheduleMessage()" class="quick-action-btn schedule">
+                                <i class="fas fa-calendar mr-3"></i>
+                                <span>Programar</span>
+                            </button>
+                            <button onclick="ComunicacionesModule.emergencyAlert()" class="quick-action-btn emergency">
+                                <i class="fas fa-exclamation-triangle mr-3"></i>
+                                <span>Alerta Emergencia</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas de Hoy -->
+                <div class="glass-card mb-6">
+                    <div class="card-header">
+                        <h3 class="text-xl font-bold text-white">Estadísticas de Hoy</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="daily-stats">
+                            <div class="stat-item">
+                                <div class="stat-icon bg-blue-500">
+                                    <i class="fas fa-paper-plane"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-number">156</div>
+                                    <div class="stat-label">Mensajes Enviados</div>
+                                </div>
+                            </div>
+
+                            <div class="stat-item">
+                                <div class="stat-icon bg-green-500">
+                                    <i class="fas fa-envelope-open"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-number">142</div>
+                                    <div class="stat-label">Mensajes Leídos</div>
+                                </div>
+                            </div>
+
+                            <div class="stat-item">
+                                <div class="stat-icon bg-purple-500">
+                                    <i class="fas fa-reply"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-number">89</div>
+                                    <div class="stat-label">Respuestas</div>
+                                </div>
+                            </div>
+
+                            <div class="stat-item">
+                                <div class="stat-icon bg-yellow-500">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-number">2.5h</div>
+                                    <div class="stat-label">Tiempo Respuesta</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canales de Comunicación -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3 class="text-xl font-bold text-white">Canales Activos</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="communication-channels">
+                            <div class="channel-item active">
+                                <div class="channel-icon email">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="channel-info">
+                                    <h4 class="channel-name">Email</h4>
+                                    <p class="channel-status">Operativo</p>
+                                </div>
+                                <div class="channel-stats">
+                                    <span class="channel-count">89 hoy</span>
+                                </div>
+                            </div>
+
+                            <div class="channel-item active">
+                                <div class="channel-icon whatsapp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </div>
+                                <div class="channel-info">
+                                    <h4 class="channel-name">WhatsApp</h4>
+                                    <p class="channel-status">Operativo</p>
+                                </div>
+                                <div class="channel-stats">
+                                    <span class="channel-count">45 hoy</span>
+                                </div>
+                            </div>
+
+                            <div class="channel-item active">
+                                <div class="channel-icon sms">
+                                    <i class="fas fa-sms"></i>
+                                </div>
+                                <div class="channel-info">
+                                    <h4 class="channel-name">SMS</h4>
+                                    <p class="channel-status">Operativo</p>
+                                </div>
+                                <div class="channel-stats">
+                                    <span class="channel-count">22 hoy</span>
+                                </div>
+                            </div>
+
+                            <div class="channel-item maintenance">
+                                <div class="channel-icon push">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <div class="channel-info">
+                                    <h4 class="channel-name">Push</h4>
+                                    <p class="channel-status">Mantenimiento</p>
+                                </div>
+                                <div class="channel-stats">
+                                    <span class="channel-count">0 hoy</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección: Redactar -->
+    <div id="compose-section" class="section-content">
+        <div class="glass-card">
+            <div class="card-header">
+                <h3 class="text-xl font-bold text-white">Redactar Mensaje</h3>
+                <div class="flex space-x-2">
+                    <button onclick="ComunicacionesModule.saveDraft()" class="btn-sm btn-secondary">
+                        <i class="fas fa-save mr-1"></i>Guardar Borrador
+                    </button>
+                    <button onclick="ComunicacionesModule.useTemplate()" class="btn-sm btn-primary">
+                        <i class="fas fa-file-alt mr-1"></i>Usar Plantilla
+                    </button>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="compose-form">
+                    <!-- Configuración del Mensaje -->
+                    <div class="message-config mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="form-label">Canal de Envío</label>
+                                <select class="input-field" id="message-channel">
+                                    <option value="email">Email</option>
+                                    <option value="whatsapp">WhatsApp</option>
+                                    <option value="sms">SMS</option>
+                                    <option value="notification">Notificación Push</option>
+                                    <option value="multi">Multicanal</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Prioridad</label>
+                                <select class="input-field" id="message-priority">
+                                    <option value="normal">Normal</option>
+                                    <option value="high">Alta</option>
+                                    <option value="urgent">Urgente</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Programar Envío</label>
+                                <input type="datetime-local" class="input-field" id="schedule-time">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Destinatarios -->
+                    <div class="recipients-section mb-6">
+                        <label class="form-label">Destinatarios</label>
+                        <div class="recipients-selector">
+                            <div class="selector-tabs">
+                                <button class="selector-tab active" data-tab="individual">Individual</button>
+                                <button class="selector-tab" data-tab="group">Grupos</button>
+                                <button class="selector-tab" data-tab="all">Todos</button>
+                            </div>
+                            
+                            <div class="selector-content">
+                                <div class="tab-content active" id="individual-tab">
+                                    <div class="recipient-search mb-4">
+                                        <input type="text" placeholder="Buscar residentes..." class="input-field">
+                                    </div>
+                                    <div class="recipients-list">
+                                        <div class="recipient-item">
+                                            <input type="checkbox" class="checkbox" id="resident-1">
+                                            <label for="resident-1" class="recipient-label">
+                                                <img src="https://via.placeholder.com/30" alt="María González" class="w-8 h-8 rounded-full">
+                                                <div class="recipient-info">
+                                                    <span class="recipient-name">María González</span>
+                                                    <span class="recipient-unit">A1001</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="recipient-item">
+                                            <input type="checkbox" class="checkbox" id="resident-2">
+                                            <label for="resident-2" class="recipient-label">
+                                                <img src="https://via.placeholder.com/30" alt="Carlos Rodríguez" class="w-8 h-8 rounded-full">
+                                                <div class="recipient-info">
+                                                    <span class="recipient-name">Carlos Rodríguez</span>
+                                                    <span class="recipient-unit">A1002</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <!-- Más residentes... -->
+                                    </div>
+                                </div>
+
+                                <div class="tab-content" id="group-tab">
+                                    <div class="groups-list">
+                                        <div class="group-item">
+                                            <input type="checkbox" class="checkbox" id="group-owners">
+                                            <label for="group-owners" class="group-label">
+                                                <i class="fas fa-users text-blue-400"></i>
+                                                <div class="group-info">
+                                                    <span class="group-name">Propietarios</span>
+                                                    <span class="group-count">156 miembros</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="group-item">
+                                            <input type="checkbox" class="checkbox" id="group-tenants">
+                                            <label for="group-tenants" class="group-label">
+                                                <i class="fas fa-key text-purple-400"></i>
+                                                <div class="group-info">
+                                                    <span class="group-name">Inquilinos</span>
+                                                    <span class="group-count">98 miembros</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="group-item">
+                                            <input type="checkbox" class="checkbox" id="group-board">
+                                            <label for="group-board" class="group-label">
+                                                <i class="fas fa-crown text-yellow-400"></i>
+                                                <div class="group-info">
+                                                    <span class="group-name">Junta Directiva</span>
+                                                    <span class="group-count">7 miembros</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-content" id="all-tab">
+                                    <div class="all-recipients">
+                                        <div class="all-option">
+                                            <input type="checkbox" class="checkbox" id="all-residents">
+                                            <label for="all-residents" class="all-label">
+                                                <i class="fas fa-globe text-green-400"></i>
+                                                <div class="all-info">
+                                                    <span class="all-name">Todos los Residentes</span>
+                                                    <span class="all-count">342 destinatarios</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido del Mensaje -->
+                    <div class="message-content-section">
+                        <div class="mb-4">
+                            <label class="form-label">Asunto</label>
+                            <input type="text" placeholder="Ingrese el asunto del mensaje..." class="input-field" id="message-subject">
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="form-label">Mensaje</label>
+                            <div class="message-editor">
+                                <div class="editor-toolbar">
+                                    <button type="button" class="editor-btn" title="Negrita">
+                                        <i class="fas fa-bold"></i>
+                                    </button>
+                                    <button type="button" class="editor-btn" title="Cursiva">
+                                        <i class="fas fa-italic"></i>
+                                    </button>
+                                    <button type="button" class="editor-btn" title="Subrayado">
+                                        <i class="fas fa-underline"></i>
+                                    </button>
+                                    <div class="editor-separator"></div>
+                                    <button type="button" class="editor-btn" title="Lista">
+                                        <i class="fas fa-list-ul"></i>
+                                    </button>
+                                    <button type="button" class="editor-btn" title="Enlace">
+                                        <i class="fas fa-link"></i>
+                                    </button>
+                                    <button type="button" class="editor-btn" title="Emoji">
+                                        <i class="fas fa-smile"></i>
+                                    </button>
+                                    <div class="editor-separator"></div>
+                                    <button type="button" class="editor-btn" title="Variables">
+                                        <i class="fas fa-code"></i>
+                                    </button>
+                                </div>
+                                <textarea class="message-textarea" placeholder="Escriba su mensaje aquí..." rows="8" id="message-body"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Adjuntos -->
+                        <div class="attachments-section mb-6">
+                            <label class="form-label">Adjuntos</label>
+                            <div class="file-upload-area">
+                                <div class="upload-zone" onclick="ComunicacionesModule.selectFiles()">
+                                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-gray-400">Arrastra archivos aquí o haz clic para seleccionar</p>
+                                    <p class="text-sm text-gray-500">Máximo 10MB por archivo</p>
+                                </div>
+                                <input type="file" multiple class="hidden" id="file-input">
+                            </div>
+                            <div class="attached-files" id="attached-files">
+                                <!-- Archivos adjuntos aparecerán aquí -->
+                            </div>
+                        </div>
+
+                        <!-- Opciones Avanzadas -->
+                        <div class="advanced-options">
+                            <div class="options-toggle">
+                                <button type="button" class="toggle-btn" onclick="ComunicacionesModule.toggleAdvanced()">
+                                    <i class="fas fa-cog mr-2"></i>Opciones Avanzadas
+                                    <i class="fas fa-chevron-down ml-2"></i>
+                                </button>
+                            </div>
+                            <div class="options-content" id="advanced-options" style="display: none;">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                    <div>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" class="checkbox">
+                                            <span>Solicitar confirmación de lectura</span>
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" class="checkbox">
+                                            <span>Permitir respuestas</span>
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" class="checkbox">
+                                            <span>Enviar copia a administración</span>
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" class="checkbox">
+                                            <span>Guardar como plantilla</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones del Formulario -->
+                    <div class="form-actions">
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-2">
+                                <button type="button" onclick="ComunicacionesModule.previewMessage()" class="btn-secondary">
+                                    <i class="fas fa-eye mr-2"></i>Vista Previa
+                                </button>
+                                <button type="button" onclick="ComunicacionesModule.saveDraft()" class="btn-secondary">
+                                    <i class="fas fa-save mr-2"></i>Guardar Borrador
+                                </button>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button type="button" onclick="ComunicacionesModule.cancelMessage()" class="btn-danger">
+                                    <i class="fas fa-times mr-2"></i>Cancelar
+                                </button>
+                                <button type="button" onclick="ComunicacionesModule.sendMessage()" class="btn-primary">
+                                    <i class="fas fa-paper-plane mr-2"></i>Enviar Mensaje
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección: Difusión -->
+    <div id="broadcast-section" class="section-content">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Mensajes de Difusión -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="text-xl font-bold text-white">Mensajes de Difusión</h3>
+                    <div class="flex space-x-2">
+                        <button onclick="ComunicacionesModule.newBroadcast()" class="btn-sm btn-primary">
+                            <i class="fas fa-plus mr-1"></i>Nueva Difusión
+                        </button>
+                        <button onclick="ComunicacionesModule.scheduleBroadcast()" class="btn-sm btn-secondary">
+                            <i class="fas fa-calendar mr-1"></i>Programar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <!-- Filtros de Difusión -->
+                    <div class="broadcast-filters mb-6">
+                        <div class="flex space-x-2">
+                            <select class="input-field">
+                                <option value="">Todos los estados</option>
+                                <option value="draft">Borrador</option>
+                                <option value="scheduled">Programado</option>
+                                <option value="sent">Enviado</option>
+                                <option value="failed">Fallido</option>
+                            </select>
+                            <select class="input-field">
+                                <option value="">Todos los tipos</option>
+                                <option value="announcement">Anuncio</option>
+                                <option value="emergency">Emergencia</option>
+                                <option value="maintenance">Mantenimiento</option>
+                                <option value="event">Evento</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Difusiones -->
+                    <div class="broadcast-list">
+                        <div class="broadcast-item sent">
+                            <div class="broadcast-header">
+                                <div class="broadcast-type announcement">
+                                    <i class="fas fa-bullhorn"></i>
+                                    <span>Anuncio</span>
+                                </div>
+                                <div class="broadcast-status">
+                                    <span class="status-badge status-sent">Enviado</span>
+                                    <span class="broadcast-time">hace 2 horas</span>
+                                </div>
+                            </div>
+                            <div class="broadcast-content">
+                                <h4 class="broadcast-title">Convocatoria Asamblea General Ordinaria</h4>
+                                <p class="broadcast-preview">Estimados propietarios, por medio de la presente los convocamos a la Asamblea General Ordinaria que se realizará el próximo sábado...</p>
+                                <div class="broadcast-stats">
+                                    <div class="stat-item">
+                                        <i class="fas fa-users text-blue-400"></i>
+                                        <span>156 destinatarios</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="fas fa-envelope-open text-green-400"></i>
+                                        <span>142 leídos (91%)</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="fas fa-reply text-purple-400"></i>
+                                        <span>23 respuestas</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="broadcast-actions">
+                                <button class="btn-xs btn-primary">Ver Detalles</button>
+                                <button class="btn-xs btn-success">Ver Respuestas</button>
+                                <button class="btn-xs btn-secondary">Duplicar</button>
+                            </div>
+                        </div>
+
+                        <div class="broadcast-item scheduled">
+                            <div class="broadcast-header">
+                                <div class="broadcast-type maintenance">
+                                    <i class="fas fa-tools"></i>
+                                    <span>Mantenimiento</span>
+                                </div>
+                                <div class="broadcast-status">
+                                    <span class="status-badge status-scheduled">Programado</span>
+                                    <span class="broadcast-time">mañana 8:00 AM</span>
+                                </div>
+                            </div>
+                            <div class="broadcast-content">
+                                <h4 class="broadcast-title">Corte programado de agua</h4>
+                                <p class="broadcast-preview">Informamos que mañana miércoles 16 de noviembre se realizará mantenimiento en el sistema de bombeo...</p>
+                                <div class="broadcast-stats">
+                                    <div class="stat-item">
+                                        <i class="fas fa-users text-blue-400"></i>
+                                        <span>342 destinatarios</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="fas fa-clock text-yellow-400"></i>
+                                        <span>Programado para envío</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="broadcast-actions">
+                                <button class="btn-xs btn-primary">Editar</button>
+                                <button class="btn-xs btn-success">Enviar Ahora</button>
+                                <button class="btn-xs btn-danger">Cancelar</button>
+                            </div>
+                        </div>
+
+                        <div class="broadcast-item draft">
+                            <div class="broadcast-header">
+                                <div class="broadcast-type event">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Evento</span>
+                                </div>
+                                <div class="broadcast-status">
+                                    <span class="status-badge status-draft">Borrador</span>
+                                    <span class="broadcast-time">guardado hace 1 hora</span>
+                                </div>
+                            </div>
+                            <div class="broadcast-content">
+                                <h4 class="broadcast-title">Celebración Navideña 2024</h4>
+                                <p class="broadcast-preview">Los invitamos a participar en nuestra tradicional celebración navideña que se realizará...</p>
+                                <div class="broadcast-stats">
+                                    <div class="stat-item">
+                                        <i class="fas fa-edit text-gray-400"></i>
+                                        <span>En edición</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="broadcast-actions">
+                                <button class="btn-xs btn-primary">Continuar Editando</button>
+                                <button class="btn-xs btn-success">Enviar</button>
+                                <button class="btn-xs btn-danger">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas de Difusión -->
+            <div>
+                <!-- Rendimiento de Difusiones -->
+                <div class="glass-card mb-6">
+                    <div class="card-header">
+                        <h3 class="text-xl font-bold text-white">Rendimiento de Difusiones</h3>
+                        <select class="input-field-sm">
+                            <option>Últimos 30 días</option>
+                            <option>Últimos 3 meses</option>
+                            <option>Este año</option>
+                        </select>
+                    </div>
+                    <div class="card-content">
+                        <div class="performance-metrics">
+                            <div class="metric-row">
+                                <div class="metric-label">Difusiones Enviadas:</div>
+                                <div class="metric-value">24</div>
+                                <div class="metric-change positive">+12%</div>
+                            </div>
+                            <div class="metric-row">
+                                <div class="metric-label">Tasa de Entrega:</div>
+                                <div class="metric-value">98.5%</div>
+                                <div class="metric-change positive">+2.1%</div>
+                            </div>
+                            <div class="metric-row">
+                                <div class="metric-label">Tasa de Lectura:</div>
+                                <div class="metric-value">89.2%</div>
+                                <div class="metric-change positive">+5.3%</div>
+                            </div>
+                            <div class="metric-row">
+                                <div class="metric-label">Tasa de Respuesta:</div>
+                                <div class="metric-value">23.7%</div>
+                                <div class="metric-change negative">-1.8%</div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico de Rendimiento -->
+                        <div class="performance-chart mt-6">
+                            <h4 class="chart-title">Difusiones por Semana</h4>
+                            <div class="chart-bars-broadcast">
+                                <div class="broadcast-bar">
+                                    <div class="bar-week">Sem 1</div>
+                                    <div class="bar-container">
+                                        <div class="bar-fill" style="height: 60%"></div>
+                                    </div>
+                                    <div class="bar-value">6</div>
+                                </div>
+                                <div class="broadcast-bar">
+                                    <div class="bar-week">Sem 2</div>
+                                    <div class="bar-container">
+                                        <div class="bar-fill" style="height: 80%"></div>
+                                    </div>
+                                    <div class="bar-value">8</div>
+                                </div>
+                                <div class="broadcast-bar">
+                                    <div class="bar-week">Sem 3</div>
+                                    <div class="bar-container">
+                                        <div class="bar-fill" style="height: 45%"></div>
+                                    </div>
+                                    <div class="bar-value">4</div>
+                                </div>
+                                <div class="broadcast-bar">
+                                    <div class="bar-week">Sem 4</div>
+                                    <div class="bar-container">
+                                        <div class="bar-fill" style="height: 70%"></div>
+                                    </div>
+                                    <div class="bar-value">6</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tipos de Difusión -->
+                <div class="glass-card mb-6">
+                    <div class="card-header">
+                        <h3 class="text-xl font-bold text-white">Tipos de Difusión</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="broadcast-types">
+                            <div class="type-stat">
+                                <div class="type-icon bg-blue-500">
+                                    <i class="fas fa-bullhorn"></i>
+                                </div>
+                                <div class="type-info">
+                                    <div class="type-name">Anuncios</div>
+                                    <div class="type-count">12 este mes</div>
+                                </div>
+                                <div class="type-percentage">50%</div>
+                            </div>
+
+                            <div class="type-stat">
+                                <div class="type-icon bg-yellow-500">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                                <div class="type-info">
+                                    <div class="type-name">Mantenimiento</div>
+                                    <div class="type-count">8 este mes</div>
+                                </div>
+                                <div class="type-percentage">33%</div>
+                            </div>
+
+                            <div class="type-stat">
+                                <div class="type-icon bg-red-500">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="type-info">
+                                    <div class="type-name">Emergencias</div>
+                                    <div class="type-count">2 este mes</div>
+                                </div>
+                                <div class="type-percentage">8%</div>
+                            </div>
+
+                            <div class="type-stat">
+                                <div class="type-icon bg-purple-500">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+                                <div class="type-info">
+                                    <div class="type-name">Eventos</div>
+                                    <div class="type-count">2 este mes</div>
+                                </div>
+                                <div class="type-percentage">8%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mejores Horarios -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3 class="text-xl font-bold text-white">Mejores Horarios</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="best-times">
+                            <div class="time-slot">
+                                <div class="time-period">8:00 - 10:00 AM</div>
+                                <div class="time-stats">
+                                    <div class="time-rate">94% lectura</div>
+                                    <div class="time-bar">
+                                        <div class="time-fill" style="width: 94%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="time-slot">
+                                <div class="time-period">6:00 - 8:00 PM</div>
+                                <div class="time-stats">
+                                    <div class="time-rate">89% lectura</div>
+                                    <div class="time-bar">
+                                        <div class="time-fill" style="width: 89%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="time-slot">
+                                <div class="time-period">12:00 - 2:00 PM</div>
+                                <div class="time-stats">
+                                    <div class="time-rate">76% lectura</div>
+                                    <div class="time-bar">
+                                        <div class="time-fill" style="width: 76%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="time-slot">
+                                <div class="time-period">10:00 PM - 12:00 AM</div>
+                                <div class="time-stats">
+                                    <div class="time-rate">45% lectura</div>
+                                    <div class="time-bar">
+                                        <div class="time-fill" style="width: 45%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección: Plantillas -->
+    <div id="templates-section" class="section-content">
+        <div class="glass-card">
+            <div class="card-header">
+                <h3 class="text-xl font-bold text-white">Plantillas de Mensajes</h3>
+                <div class="flex space-x-2">
+                    <button onclick="ComunicacionesModule.newTemplate()" class="btn-sm btn-primary">
+                        <i class="fas fa-plus mr-1"></i>Nueva Plantilla
+                    </button>
+                    <button onclick="ComunicacionesModule.importTemplates()" class="btn-sm btn-secondary">
+                        <i class="fas fa-upload mr-1"></i>Importar
+                    </button>
+                </div>
+            </div>
+            <div class="card-content">
+                <!-- Categorías de Plantillas -->
+                <div class="template-categories mb-6">
+                    <div class="category-tabs">
+                        <button class="category-tab active" data-category="all">Todas</button>
+                        <button class="category-tab" data-category="announcements">Anuncios</button>
+                        <button class="category-tab" data-category="maintenance">Mantenimiento</button>
+                        <button class="category-tab" data-category="payments">Pagos</button>
+                        <button class="category-tab" data-category="events">Eventos</button>
+                        <button class="category-tab" data-category="emergency">Emergencia</button>
+                    </div>
+                </div>
+
+                <!-- Lista de Plantillas -->
+                <div class="templates-grid">
+                    <div class="template-card announcements">
+                        <div class="template-header">
+                            <div class="template-category">
+                                <i class="fas fa-bullhorn text-blue-400"></i>
+                                <span>Anuncio</span>
+                            </div>
+                            <div class="template-actions">
+                                <button class="template-action-btn" title="Usar plantilla">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="template-action-btn" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="template-action-btn" title="Duplicar">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="template-content">
+                            <h4 class="template-title">Convocatoria Asamblea General</h4>
+                            <p class="template-description">Plantilla para convocar a asamblea general ordinaria o extraordinaria</p>
+                            <div class="template-preview">
+                                <p>Estimados propietarios, por medio de la presente los convocamos a la Asamblea General [TIPO] que se realizará el día [FECHA] a las [HORA]...</p>
+                            </div>
+                            <div class="template-stats">
+                                <span class="usage-count">Usado 12 veces</span>
+                                <span class="last-used">Última vez: hace 2 semanas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="template-card maintenance">
+                        <div class="template-header">
+                            <div class="template-category">
+                                <i class="fas fa-tools text-yellow-400"></i>
+                                <span>Mantenimiento</span>
+                            </div>
+                            <div class="template-actions">
+                                <button class="template-action-btn" title="Usar plantilla">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="template-action-btn" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="template-action-btn" title="Duplicar">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="template-content">
+                            <h4 class="template-title">Aviso de Mantenimiento Programado</h4>
+                            <p class="template-description">Notificación para mantenimientos que afecten servicios</p>
+                            <div class="template-preview">
+                                <p>Informamos que el día [FECHA] de [HORA_INICIO] a [HORA_FIN] se realizará mantenimiento en [SISTEMA]. Durante este tiempo...</p>
+                            </div>
+                            <div class="template-stats">
+                                <span class="usage-count">Usado 8 veces</span>
+                                <span class="last-used">Última vez: hace 3 días</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="template-card payments">
+                        <div class="template-header">
+                            <div class="template-category">
+                                <i class="fas fa-credit-card text-green-400"></i>
+                                <span>Pagos</span>
+                            </div>
+                            <div class="template-actions">
+                                <button class="template-action-btn" title="Usar plantilla">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="template-action-btn" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="template-action-btn" title="Duplicar">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="template-content">
+                            <h4 class="template-title">Recordatorio de Pago</h4>
+                            <p class="template-description">Recordatorio amigable para pagos próximos a vencer</p>
+                            <div class="template-preview">
+                                <p>Estimado/a [NOMBRE], le recordamos que su cuota de administración correspondiente al mes de [MES] vence el [FECHA_VENCIMIENTO]...</p>
+                            </div>
+                            <div class="template-stats">
+                                <span class="usage-count">Usado 45 veces</span>
+                                <span class="last-used">Última vez: ayer</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="template-card events">
+                    <div class="template-card events">
+                        <div class="template-header">
+                            <div class="template-category">
+                                <i class="fas fa-calendar text-purple-400"></i>
+                                <span>Eventos</span>
+                            </div>
+                            <div class="template-actions">
+                                <button class="template-action-btn" title="Usar plantilla">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="template-action-btn" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="template-action-btn" title="Duplicar">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="template-content">
+                            <h4 class="template-title">Invitación a Evento Social</h4>
+                            <p class="template-description">Invitación para eventos y actividades del condominio</p>
+                            <div class="template-preview">
+                                <p>Los invitamos cordialmente a participar en [EVENTO] que se realizará el [FECHA] a las [HORA] en [LUGAR]...</p>
+                            </div>
+                            <div class="template-stats">
+                                <span class="usage-count">Usado 6 veces</span>
+                                <span class="last-used">Última vez: hace 1 mes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="template-card emergency">
+                        <div class="template-header">
+                            <div class="template-category">
+                                <i class="fas fa-exclamation-triangle text-red-400"></i>
+                                <span>Emergencia</span>
+                            </div>
+                            <div class="template-actions">
+                                <button class="template-action-btn" title="Usar plantilla">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="template-action-btn" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="template-action-btn" title="Duplicar">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="template-content">
+                            <h4 class="template-title">Alerta de Emergencia</h4>
+                            <p class="template-description">Notificación urgente para situaciones de emergencia</p>
+                            <div class="template-preview">
+                                <p>ALERTA: Se ha presentado [TIPO_EMERGENCIA] en [UBICACION]. Por favor [INSTRUCCIONES]. Manténganse informados...</p>
+                            </div>
+                            <div class="template-stats">
+                                <span class="usage-count">Usado 2 veces</span>
+                                <span class="last-used">Última vez: hace 6 meses</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="template-card announcements">
+                        <div class="template-header">
+                            <div class="template-category">
+                                <i class="fas fa-user-plus text-blue-400"></i>
+                                <span>Anuncio</span>
+                            </div>
+                            <div class="template-actions">
+                                <button class="template-action-btn" title="Usar plantilla">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="template-action-btn" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="template-action-btn" title="Duplicar">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="template-content">
+                            <h4 class="template-title">Bienvenida Nuevo Residente</h4>
+                            <p class="template-description">Mensaje de bienvenida para nuevos residentes</p>
+                            <div class="template-preview">
+                                <p>Estimado/a [NOMBRE], nos complace darle la bienvenida al Condominio [NOMBRE_CONDOMINIO]. Esperamos que se sienta como en casa...</p>
+                            </div>
+                            <div class="template-stats">
+                                <span class="usage-count">Usado 15 veces</span>
+                                <span class="last-used">Última vez: hace 1 semana</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paginación -->
+                <div class="pagination mt-6">
+                    <button class="pagination-btn" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="pagination-info">Página 1 de 3 • Mostrando 6 de 18 plantillas</span>
+                    <button class="pagination-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección: Notificaciones -->
+    <div id="notifications-section" class="section-content">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Centro de Notificaciones -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="text-xl font-bold text-white">Centro de Notificaciones</h3>
+                    <div class="flex space-x-2">
+                        <button onclick="ComunicacionesModule.newNotification()" class="btn-sm btn-primary">
+                            <i class="fas fa-plus mr-1"></i>Nueva Notificación
+                        </button>
+                        <button onclick="ComunicacionesModule.notificationSettings()" class="btn-sm btn-secondary">
+                            <i class="fas fa-cog mr-1"></i>Configurar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <!-- Filtros de Notificaciones -->
+                    <div class="notification-filters mb-6">
+                        <div class="flex space-x-2">
+                            <select class="input-field">
+                                <option value="">Todos los tipos</option>
+                                <option value="push">Push</option>
+                                <option value="email">Email</option>
+                                <option value="sms">SMS</option>
+                                <option value="in-app">En App</option>
+                            </select>
+                            <select class="input-field">
+                                <option value="">Todos los estados</option>
+                                <option value="active">Activas</option>
+                                <option value="scheduled">Programadas</option>
+                                <option value="sent">Enviadas</option>
+                                <option value="expired">Expiradas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Notificaciones -->
+                    <div class="notifications-list">
+                        <div class="notification-item active">
+                            <div class="notification-header">
+                                <div class="notification-type push">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <span>Push</span>
+                                </div>
+                                <div class="notification-priority high">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span>Alta</span>
+                                </div>
+                                <div class="notification-status">
+                                    <span class="status-badge status-active">Activa</span>
+                                </div>
+                            </div>
+                            <div class="notification-content">
+                                <h4 class="notification-title">Corte de agua programado</h4>
+                                <p class="notification-message">Mañana habrá corte de agua de 8:00 AM a 2:00 PM por mantenimiento del sistema de bombeo.</p>
+                                <div class="notification-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-users text-blue-400"></i>
+                                        <span>342 destinatarios</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-clock text-yellow-400"></i>
+                                        <span>Expira en 18 horas</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-eye text-green-400"></i>
+                                        <span>289 vistas</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn-xs btn-primary">Editar</button>
+                                <button class="btn-xs btn-success">Estadísticas</button>
+                                <button class="btn-xs btn-danger">Desactivar</button>
+                            </div>
+                        </div>
+
+                        <div class="notification-item scheduled">
+                            <div class="notification-header">
+                                <div class="notification-type email">
+                                    <i class="fas fa-envelope"></i>
+                                    <span>Email</span>
+                                </div>
+                                <div class="notification-priority normal">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Normal</span>
+                                </div>
+                                <div class="notification-status">
+                                    <span class="status-badge status-scheduled">Programada</span>
+                                </div>
+                            </div>
+                            <div class="notification-content">
+                                <h4 class="notification-title">Recordatorio pago administración</h4>
+                                <p class="notification-message">Recordatorio automático para residentes con pagos próximos a vencer.</p>
+                                <div class="notification-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-users text-blue-400"></i>
+                                        <span>23 destinatarios</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-calendar text-purple-400"></i>
+                                        <span>Envío: 20 Nov 9:00 AM</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-repeat text-orange-400"></i>
+                                        <span>Recurrente mensual</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn-xs btn-primary">Editar</button>
+                                <button class="btn-xs btn-success">Enviar Ahora</button>
+                                <button class="btn-xs btn-secondary">Cancelar</button>
+                            </div>
+                        </div>
+
+                        <div class="notification-item sent">
+                            <div class="notification-header">
+                                <div class="notification-type sms">
+                                    <i class="fas fa-sms"></i>
+                                    <span>SMS</span>
+                                </div>
+                                <div class="notification-priority urgent">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Urgente</span>
+                                </div>
+                                <div class="notification-status">
+                                    <span class="status-badge status-sent">Enviada</span>
+                                </div>
+                            </div>
+                            <div class="notification-content">
+                                <h4 class="notification-title">Alerta de seguridad</h4>
+                                <p class="notification-message">Se reportó actividad sospechosa en el parqueadero. Manténganse alerta y reporten cualquier novedad.</p>
+                                <div class="notification-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-users text-blue-400"></i>
+                                        <span>342 enviados</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-check text-green-400"></i>
+                                        <span>338 entregados</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-clock text-gray-400"></i>
+                                        <span>Enviado hace 2 horas</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn-xs btn-primary">Ver Reporte</button>
+                                <button class="btn-xs btn-secondary">Duplicar</button>
+                            </div>
+                        </div>
+
+                        <div class="notification-item expired">
+                            <div class="notification-header">
+                                <div class="notification-type in-app">
+                                    <i class="fas fa-bell"></i>
+                                    <span>En App</span>
+                                </div>
+                                <div class="notification-priority normal">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Normal</span>
+                                </div>
+                                <div class="notification-status">
+                                    <span class="status-badge status-expired">Expirada</span>
+                                </div>
+                            </div>
+                            <div class="notification-content">
+                                <h4 class="notification-title">Evento navideño 2024</h4>
+                                <p class="notification-message">Invitación a la celebración navideña del condominio. ¡Los esperamos!</p>
+                                <div class="notification-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-users text-blue-400"></i>
+                                        <span>342 destinatarios</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-eye text-green-400"></i>
+                                        <span>298 vistas</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-times text-red-400"></i>
+                                        <span>Expiró ayer</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn-xs btn-primary">Ver Estadísticas</button>
+                                <button class="btn-xs btn-secondary">Archivar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuración de Notificaciones -->
+            <div>
+                <!-- Configuración por Canal -->
+                <div class="glass-card mb-6">
+                    <div class="card-header">
+                        <h3 class="text-xl font-bold text-white">Configuración por Canal</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="channel-settings">
+                            <div class="channel-setting">
+                                <div class="channel-header">
+                                    <div class="channel-icon-large push">
+                                        <i class="fas fa-mobile-alt"></i>
+                                    </div>
+                                    <div class="channel-info">
+                                        <h4 class="channel-name">Notificaciones Push</h4>
+                                        <p class="channel-description">Notificaciones instantáneas en dispositivos móviles</p>
+                                    </div>
+                                    <div class="channel-toggle">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="channel-options">
+                                    <div class="option-row">
+                                        <span class="option-label">Horario permitido:</span>
+                                        <select class="input-field-sm">
+                                            <option>7:00 AM - 10:00 PM</option>
+                                            <option>24 horas</option>
+                                            <option>Personalizado</option>
+                                        </select>
+                                    </div>
+                                    <div class="option-row">
+                                        <span class="option-label">Frecuencia máxima:</span>
+                                        <select class="input-field-sm">
+                                            <option>5 por día</option>
+                                            <option>10 por día</option>
+                                            <option>Sin límite</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="channel-setting">
+                                <div class="channel-header">
+                                    <div class="channel-icon-large email">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="channel-info">
+                                        <h4 class="channel-name">Email</h4>
+                                        <p class="channel-description">Notificaciones por correo electrónico</p>
+                                    </div>
+                                    <div class="channel-toggle">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="channel-options">
+                                    <div class="option-row">
+                                        <span class="option-label">Plantilla por defecto:</span>
+                                        <select class="input-field-sm">
+                                            <option>Estándar</option>
+                                            <option>Formal</option>
+                                            <option>Moderna</option>
+                                        </select>
+                                    </div>
+                                    <div class="option-row">
+                                        <span class="option-label">Confirmación lectura:</span>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" class="checkbox" checked>
+                                            <span>Solicitar siempre</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="channel-setting">
+                                <div class="channel-header">
+                                    <div class="channel-icon-large sms">
+                                        <i class="fas fa-sms"></i>
+                                    </div>
+                                    <div class="channel-info">
+                                        <h4 class="channel-name">SMS</h4>
+                                        <p class="channel-description">Mensajes de texto cortos</p>
+                                    </div>
+                                    <div class="channel-toggle">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="channel-options">
+                                    <div class="option-row">
+                                        <span class="option-label">Solo urgentes:</span>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" class="checkbox">
+                                            <span>Activar</span>
+                                        </label>
+                                    </div>
+                                    <div class="option-row">
+                                        <span class="option-label">Límite caracteres:</span>
+                                        <select class="input-field-sm">
+                                            <option>160 caracteres</option>
+                                            <option>320 caracteres</option>
+                                            <option>Sin límite</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Automatizaciones -->
+                <div class="glass-card mb-6">
+                    <div class="card-header">
+                        <h3 class="text-xl font-bold text-white">Automatizaciones</h3>
+                        <button onclick="ComunicacionesModule.newAutomation()" class="btn-sm btn-primary">
+                            <i class="fas fa-plus mr-1"></i>Nueva
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div class="automations-list">
+                            <div class="automation-item active">
+                                <div class="automation-header">
+                                    <div class="automation-icon">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <div class="automation-info">
+                                        <h4 class="automation-name">Recordatorio de Pagos</h4>
+                                        <p class="automation-description">Envía recordatorios 3 días antes del vencimiento</p>
+                                    </div>
+                                    <div class="automation-status">
+                                        <span class="status-badge status-active">Activa</span>
+                                    </div>
+                                </div>
+                                <div class="automation-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-label">Ejecutada:</span>
+                                        <span class="stat-value">45 veces este mes</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Próxima:</span>
+                                        <span class="stat-value">Mañana 9:00 AM</span>
+                                    </div>
+                                </div>
+                                <div class="automation-actions">
+                                    <button class="btn-xs btn-secondary">Editar</button>
+                                    <button class="btn-xs btn-warning">Pausar</button>
+                                </div>
+                            </div>
+
+                            <div class="automation-item active">
+                                <div class="automation-header">
+                                    <div class="automation-icon">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                    <div class="automation-info">
+                                        <h4 class="automation-name">Bienvenida Nuevos Residentes</h4>
+                                        <p class="automation-description">Envía mensaje de bienvenida automáticamente</p>
+                                    </div>
+                                    <div class="automation-status">
+                                        <span class="status-badge status-active">Activa</span>
+                                    </div>
+                                </div>
+                                <div class="automation-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-label">Ejecutada:</span>
+                                        <span class="stat-value">8 veces este mes</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Última:</span>
+                                        <span class="stat-value">Hace 3 días</span>
+                                    </div>
+                                </div>
+                                <div class="automation-actions">
+                                    <button class="btn-xs btn-secondary">Editar</button>
+                                    <button class="btn-xs btn-warning">Pausar</button>
+                                </div>
+                            </div>
+
+                            <div class="automation-item paused">
+                                <div class="automation-header">
+                                    <div class="automation-icon">
+                                        <i class="fas fa-birthday-cake"></i>
+                                    </div>
+                                    <div class="automation-info">
+                                        <h4 class="automation-name">Felicitaciones Cumpleaños</h4>
+                                        <p class="automation-description">Envía felicitaciones en cumpleaños de residentes</p>
+                                    </div>
+                                    <div class="automation-status">
+                                        <span class="status-badge status-paused">Pausada</span>
+                                    </div>
+                                </div>
+                                <div class="automation-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-label">Ejecutada:</span>
+                                        <span class="stat-value">12 veces este año</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Estado:</span>
+                                        <span class="stat-value">Pausada por usuario</span>
+                                    </div>
+                                </div>
+                                <div class="automation-actions">
+                                    <button class="btn-xs btn-secondary">Editar</button>
+                                    <button class="btn-xs btn-success">Activar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas de Notificaciones -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3 class="text-xl font-bold text-white">Estadísticas</h3>
+                        <select class="input-field-sm">
+                            <option>Últimos 7 días</option>
+                            <option>Últimos 30 días</option>
+                            <option>Últimos 3 meses</option>
+                        </select>
+                    </div>
+                    <div class="card-content">
+                        <div class="notification-stats">
+                            <div class="stat-card">
+                                <div class="stat-header">
+                                    <i class="fas fa-paper-plane text-blue-400"></i>
+                                    <span>Enviadas</span>
+                                </div>
+                                <div class="stat-number">1,234</div>
+                                <div class="stat-change positive">+15%</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-header">
+                                    <i class="fas fa-eye text-green-400"></i>
+                                    <span>Vistas</span>
+                                </div>
+                                <div class="stat-number">1,089</div>
+                                <div class="stat-change positive">+12%</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-header">
+                                    <i class="fas fa-mouse-pointer text-purple-400"></i>
+                                    <span>Clics</span>
+                                </div>
+                                <div class="stat-number">456</div>
+                                <div class="stat-change negative">-3%</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-header">
+                                    <i class="fas fa-percentage text-yellow-400"></i>
+                                    <span>CTR</span>
+                                </div>
+                                <div class="stat-number">41.8%</div>
+                                <div class="stat-change positive">+2.1%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección: Analytics -->
+    <div id="analytics-section" class="section-content">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Métricas Generales -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="text-xl font-bold text-white">Métricas de Comunicación</h3>
+                    <div class="flex space-x-2">
+                        <select class="input-field-sm">
+                            <option>Últimos 30 días</option>
+                            <option>Últimos 3 meses</option>
+                            <option>Este año</option>
+                        </select>
+                        <button onclick="ComunicacionesModule.exportAnalytics()" class="btn-sm btn-secondary">
+                            <i class="fas fa-download mr-1"></i>Exportar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <!-- Gráfico de Tendencias -->
+                    <div class="analytics-chart mb-6">
+                        <div class="chart-header">
+                            <h4 class="chart-title">Tendencia de Mensajes</h4>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color bg-blue-500"></div>
+                                    <span>Enviados</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color bg-green-500"></div>
+                                    <span>Leídos</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color bg-purple-500"></div>
+                                    <span>Respondidos</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-area">
+                            <div class="chart-lines">
+                                <!-- Gráfico de líneas simulado -->
+                                <div class="line-chart">
+                                    <div class="chart-grid">
+                                        <div class="grid-line" style="bottom: 0%"></div>
+                                        <div class="grid-line" style="bottom: 25%"></div>
+                                        <div class="grid-line" style="bottom: 50%"></div>
+                                        <div class="grid-line" style="bottom: 75%"></div>
+                                        <div class="grid-line" style="bottom: 100%"></div>
+                                    </div>
+                                    <div class="data-points">
+                                        <!-- Puntos de datos simulados -->
+                                        <div class="data-point sent" style="left: 10%; bottom: 60%"></div>
+                                        <div class="data-point sent" style="left: 25%; bottom: 75%"></div>
+                                        <div class="data-point sent" style="left: 40%; bottom: 65%"></div>
+                                        <div class="data-point sent" style="left: 55%; bottom: 80%"></div>
+                                        <div class="data-point sent" style="left: 70%; bottom: 85%"></div>
+                                        <div class="data-point sent" style="left: 85%; bottom: 90%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chart-labels">
+                                <span>Oct 15</span>
+                                <span>Oct 22</span>
+                                <span>Oct 29</span>
+                                <span>Nov 5</span>
+                                <span>Nov 12</span>
+                                <span>Nov 19</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Métricas Clave -->
+                    <div class="key-metrics">
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <div class="metric-icon bg-blue-500">
+                                    <i class="fas fa-paper-plane"></i>
+                                </div>
+                                <div class="metric-data">
+                                    <div class="metric-number">2,456</div>
+                                    <div class="metric-label">Mensajes Enviados</div>
+                                    <div class="metric-change positive">+18%</div>
+                                </div>
+                            </div>
+
+                            <div class="metric-item">
+                                <div class="metric-icon bg-green-500">
+                                    <i class="fas fa-envelope-open"></i>
+                                </div>
+                                <div class="metric-data">
+                                    <div class="metric-number">91.2%</div>
+                                    <div class="metric-label">Tasa de Lectura</div>
+                                    <div class="metric-change positive">+3.1%</div>
+                                </div>
+                            </div>
+
+                            <div class="metric-item">
+                                <div class="metric-icon bg-purple-500">
+                                    <i class="fas fa-reply"></i>
+                                </div>
+                                <div class="metric-data">
+                                    <div class="metric-number">34.7%</div>
+                                    <div class="metric-label">Tasa de Respuesta</div>
+                                    <div class="metric-change negative">-2.3%</div>
+                                </div>
+                            </div>
+
+                            <div class="metric-item">
+                                <div class="metric-icon bg-yellow-500">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="metric-data">
+                                    <div class="metric-number">2.4h</div>
+                                    <div class="metric-label">Tiempo Respuesta</div>
+                                    <div class="metric-change positive">-15min</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Análisis por Canal -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="text-xl font-bold text-white">Análisis por Canal</h3>
+                </div>
+                <div class="card-content">
+                    <div class="channel-analytics">
+                        <div class="channel-metric">
+                            <div class="channel-header">
+                                <div class="channel-icon email">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="channel-name">Email</div>
+                                <div class="channel-percentage">45%</div>
+                            </div>
+                            <div class="channel-stats">
+                                <div class="stat-row">
+                                    <span class="stat-label">Enviados:</span>
+                                    <span class="stat-value">1,105</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Entregados:</span>
+                                    <span class="stat-value">1,089 (98.5%)</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Abiertos:</span>
+                                    <span class="stat-value">967 (88.8%)</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Clics:</span>
+                                    <span class="stat-value">234 (24.2%)</span>
+                                </div>
+                            </div>
+                            <div class="channel-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-blue-500" style="width: 45%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="channel-metric">
+                            <div class="channel-header">
+                                <div class="channel-icon whatsapp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </div>
+                                <div class="channel-name">WhatsApp</div>
+                                <div class="channel-percentage">32%</div>
+                            </div>
+                            <div class="channel-stats">
+                                <div class="stat-row">
+                                    <span class="stat-label">Enviados:</span>
+                                    <span class="stat-value">786</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Entregados:</span>
+                                    <span class="stat-value">782 (99.5%)</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Leídos:</span>
+                                    <span class="stat-value">745 (95.3%)</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Respuestas:</span>
+                                    <span class="stat-value">298 (40.0%)</span>
+                                </div>
+                            </div>
+                            <div class="channel-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-green-500" style="width: 32%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="channel-metric">
+                            <div class="channel-header">
+                                <div class="channel-icon sms">
+                                    <i class="fas fa-sms"></i>
+                                </div>
+                                <div class="channel-name">SMS</div>
+                                <div class="channel-percentage">18%</div>
+                            </div>
+                            <div class="channel-stats">
+                                <div class="stat-row">
+                                    <span class="stat-label">Enviados:</span>
+                                    <span class="stat-value">442</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Entregados:</span>
+                                    <span class="stat-value">438 (99.1%)</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Respuestas:</span>
+                                    <span class="stat-value">67 (15.3%)</span>
+                                </div>
+                            </div>
+                            <div class="channel-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-yellow-500" style="width: 18%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="channel-metric">
+                            <div class="channel-header">
+                                <div class="channel-icon push">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <div class="channel-name">Push</div>
+                                <div class="channel-percentage">5%</div>
+                            </div>
+                            <div class="channel-stats">
+                                <div class="stat-row">
+                                    <span class="stat-label">Enviadas:</span>
+                                    <span class="stat-value">123</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Entregadas:</span>
+                                    <span class="stat-value">118 (95.9%)</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Abiertas:</span>
+                                    <span class="stat-value">89 (75.4%)</span>
+                                </div>
+                            </div>
+                            <div class="channel-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-purple-500" style="width: 5%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Análisis Detallado -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+            <!-- Horarios Óptimos -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="text-xl font-bold text-white">Horarios Óptimos</h3>
+                </div>
+                <div class="card-content">
+                    <div class="optimal-times">
+                        <div class="time-analysis">
+                            <h4 class="analysis-title">Mejor Día de la Semana</h4>
+                            <div class="day-stats">
+                                <div class="day-item best">
+                                    <span class="day-name">Martes</span>
+                                    <span class="day-rate">94% lectura</span>
+                                </div>
+                                <div class="day-item good">
+                                    <span class="day-name">Miércoles</span>
+                                    <span class="day-rate">91% lectura</span>
+                                </div>
+                                <div class="day-item average">
+                                    <span class="day-name">Lunes</span>
+                                    <span class="day-rate">87% lectura</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="time-analysis">
+                            <h4 class="analysis-title">Mejor Hora del Día</h4>
+                            <div class="hour-stats">
+                                <div class="hour-item best">
+                                    <span class="hour-range">8:00 - 10:00 AM</span>
+                                    <span class="hour-rate">96% lectura</span>
+                                </div>
+                                <div class="hour-item good">
+                                    <span class="hour-range">6:00 - 8:00 PM</span>
+                                    <span class="hour-rate">89% lectura</span>
+                                </div>
+                                <div class="hour-item average">
+                                    <span class="hour-range">12:00 - 2:00 PM</span>
+                                    <span class="hour-rate">78% lectura</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Temas Populares -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="text-xl font-bold text-white">Temas Populares</h3>
+                </div>
+                <div class="card-content">
+                    <div class="popular-topics">
+                        <div class="topic-item">
+                            <div class="topic-icon bg-blue-500">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <div class="topic-info">
+                                <div class="topic-name">Mantenimiento</div>
+                                <div class="topic-stats">34% de mensajes</div>
+                            </div>
+                            <div class="topic-engagement">92% lectura</div>
+                        </div>
+
+                        <div class="topic-item">
+                            <div class="topic-icon bg-green-500">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="topic-info">
+                                <div class="topic-name">Pagos</div>
+                                <div class="topic-stats">28% de mensajes</div>
+                            </div>
+                            <div class="topic-engagement">89% lectura</div>
+                        </div>
+
+                        <div class="topic-item">
+                            <div class="topic-icon bg-purple-500">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div class="topic-info">
+                                <div class="topic-name">Anuncios</div>
+                                <div class="topic-stats">22% de mensajes</div>
+                            </div>
+                            <div class="topic-engagement">85% lectura</div>
+                        </div>
+
+                        <div class="topic-item">
+                            <div class="topic-icon bg-red-500">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="topic-info">
+                                <div class="topic-name">Emergencias</div>
+                                <div class="topic-stats">8% de mensajes</div>
+                            </div>
+                            <div class="topic-engagement">98% lectura</div>
+                        </div>
+
+                        <div class="topic-item">
+                            <div class="topic-icon bg-yellow-500">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="topic-info">
+                                <div class="topic-name">Eventos</div>
+                                <div class="topic-stats">8% de mensajes</div>
+                            </div>
+                            <div class="topic-engagement">76% lectura</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Satisfacción -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="text-xl font-bold text-white">Satisfacción</h3>
+                </div>
+                <div class="card-content">
+                    <div class="satisfaction-metrics">
+                        <div class="satisfaction-score">
+                            <div class="score-circle">
+                                <div class="score-number">4.6</div>
+                                <div class="score-max">/5.0</div>
+                            </div>
+                            <div class="score-label">Puntuación General</div>
+                        </div>
+
+                        <div class="satisfaction-breakdown">
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Claridad:</span>
+                                <div class="breakdown-stars">
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                </div>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Frecuencia:</span>
+                                <div class="breakdown-stars">
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Relevancia:</span>
+                                <div class="breakdown-stars">
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                </div>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Tiempo Respuesta:</span>
+                                <div class="breakdown-stars">
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="feedback-summary">
+                            <h4 class="feedback-title">Comentarios Recientes</h4>
+                            <div class="feedback-items">
+                                <div class="feedback-item positive">
+                                    <i class="fas fa-thumbs-up text-green-400"></i>
+                                    <span>"Muy clara la información sobre el mantenimiento"</span>
+                                </div>
+                                <div class="feedback-item positive">
+                                    <i class="fas fa-thumbs-up text-green-400"></i>
+                                    <span>"Responden muy rápido a las consultas"</span>
+                                </div>
+                                <div class="feedback-item neutral">
+                                    <i class="fas fa-minus text-yellow-400"></i>
+                                    <span>"Podrían enviar menos recordatorios"</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts del Módulo -->
+<script>
+class ComunicacionesModule {
+    static init() {
+        this.setupTabNavigation();
+        this.setupRealTimeUpdates();
+        this.loadInitialData();
+        this.setupEventListeners();
+    }
+
+    static setupTabNavigation() {
+        const tabs = document.querySelectorAll('.tab-button');
+        const sections = document.querySelectorAll('.section-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const sectionId = tab.dataset.section + '-section';
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update active section
+                sections.forEach(s => s.classList.remove('active'));
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+    }
+
+    static setupRealTimeUpdates() {
+        // Update communication metrics every 30 seconds
+        setInterval(() => {
+            this.updateCommunicationMetrics();
+        }, 30000);
+
+        // Update message status every 60 seconds
+        setInterval(() => {
+            this.updateMessageStatus();
+        }, 60000);
+    }
+
+    static setupEventListeners() {
+        // Setup recipient selector tabs
+        this.setupRecipientTabs();
+        
+        // Setup template categories
+        this.setupTemplateCategories();
+        
+        // Setup file upload
+        this.setupFileUpload();
+        
+        // Setup editor toolbar
+        this.setupEditorToolbar();
+    }
+
+    static setupRecipientTabs() {
+        const tabs = document.querySelectorAll('.selector-tab');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.dataset.tab + '-tab';
+                
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                contents.forEach(c => c.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    }
+
+    static setupTemplateCategories() {
+        const categoryTabs = document.querySelectorAll('.category-tab');
+        
+        categoryTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const category = tab.dataset.category;
+                
+                categoryTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                this.filterTemplates(category);
+            });
+        });
+    }
+
+    static setupFileUpload() {
+        const uploadZone = document.querySelector('.upload-zone');
+        const fileInput = document.getElementById('file-input');
+
+        if (uploadZone && fileInput) {
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('dragover');
+            });
+
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                this.handleFiles(e.dataTransfer.files);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                this.handleFiles(e.target.files);
+            });
+        }
+    }
+
+    static setupEditorToolbar() {
+        const editorBtns = document.querySelectorAll('.editor-btn');
+        
+        editorBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.handleEditorAction(btn);
+            });
+        });
+    }
+
+    static loadInitialData() {
+        this.updateCommunicationMetrics();
+        this.loadInboxMessages();
+        this.loadTemplates();
+    }
+
+    static updateCommunicationMetrics() {
+        // Update dashboard communication metrics
+        console.log('Actualizando métricas de comunicación...');
+    }
+
+    static updateMessageStatus() {
+        // Update message delivery and read status
+        console.log('Actualizando estado de mensajes...');
+    }
+
+    static loadInboxMessages() {
+        // Load inbox messages
+        console.log('Cargando mensajes de bandeja de entrada...');
+    }
+
+    static loadTemplates() {
+        // Load message templates
+        console.log('Cargando plantillas de mensajes...');
+    }
+
+    static filterTemplates(category) {
+        const templates = document.querySelectorAll('.template-card');
+        
+        templates.forEach(template => {
+            if (category === 'all' || template.classList.contains(category)) {
+                template.style.display = 'block';
+            } else {
+                template.style.display = 'none';
+            }
+        });
+    }
+
+    static handleFiles(files) {
+        const attachedFiles = document.getElementById('attached-files');
+        
+        Array.from(files).forEach(file => {
+            if (file.size <= 10 * 1024 * 1024) { // 10MB limit
+                this.addAttachment(file, attachedFiles);
+            } else {
+                alert(`El archivo ${file.name} es demasiado grande. Máximo 10MB.`);
+            }
+        });
+    }
+
+    static addAttachment(file, container) {
+        const attachmentDiv = document.createElement('div');
+        attachmentDiv.className = 'attachment-item';
+        attachmentDiv.innerHTML = `
+            <div class="attachment-info">
+                <i class="fas fa-file"></i>
+                <span class="attachment-name">${file.name}</span>
+                <span class="attachment-size">${this.formatFileSize(file.size)}</span>
+            </div>
+            <button type="button" class="remove-attachment" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        container.appendChild(attachmentDiv);
+    }
+
+    static formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    static handleEditorAction(btn) {
+        const action = btn.getAttribute('title').toLowerCase();
+        console.log('Acción del editor:', action);
+        // Implement editor actions here
+    }
+
+    // Event handlers
+    static newMessage() {
+        console.log('Crear nuevo mensaje...');
+    }
+
+    static broadcastMessage() {
+        console.log('Crear mensaje masivo...');
+    }
+
+    static markAllRead() {
+        console.log('Marcar todos como leídos...');
+    }
+
+    static refreshInbox() {
+        console.log('Actualizar bandeja de entrada...');
+    }
+
+    static openMessage(messageId) {
+        console.log('Abrir mensaje:', messageId);
+    }
+
+    static replyMessage(messageId) {
+        console.log('Responder mensaje:', messageId);
+    }
+
+    static forwardMessage(messageId) {
+        console.log('Derivar mensaje:', messageId);
+    }
+
+    static approveVisitor(messageId) {
+        console.log('Aprobar visitante:', messageId);
+    }
+
+    static markRead(messageId) {
+        console.log('Marcar como leído:', messageId);
+    }
+
+    static saveDraft() {
+        console.log('Guardar borrador...');
+    }
+
+    static useTemplate() {
+        console.log('Usar plantilla...');
+    }
+
+    static selectFiles() {
+        document.getElementById('file-input').click();
+    }
+
+    static toggleAdvanced() {
+        const options = document.getElementById('advanced-options');
+        const isVisible = options.style.display !== 'none';
+        options.style.display = isVisible ? 'none' : 'block';
+    }
+
+    static previewMessage() {
+        console.log('Vista previa del mensaje...');
+    }
+
+    static cancelMessage() {
+        console.log('Cancelar mensaje...');
+    }
+
+    static sendMessage() {
+        console.log('Enviar mensaje...');
+    }
+
+    static newBroadcast() {
+        console.log('Nueva difusión...');
+    }
+
+    static scheduleBroadcast() {
+        console.log('Programar difusión...');
+    }
+
+    static newTemplate() {
+        console.log('Nueva plantilla...');
+    }
+
+    static importTemplates() {
+        console.log('Importar plantillas...');
+    }
+
+    static newNotification() {
+        console.log('Nueva notificación...');
+    }
+
+    static notificationSettings() {
+        console.log('Configurar notificaciones...');
+    }
+
+    static newAutomation() {
+        console.log('Nueva automatización...');
+    }
+
+    static exportAnalytics() {
+        console.log('Exportar analytics...');
+    }
+
+    static sendNotification() {
+        console.log('Enviar notificación...');
+    }
+
+    static scheduleMessage() {
+        console.log('Programar mensaje...');
+    }
+
+    static emergencyAlert() {
+        console.log('Alerta de emergencia...');
+    }
+}
+
+// Initialize module when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('comunicaciones-module')) {
+        ComunicacionesModule.init();
+    }
+});
+</script>
+
+<!-- Estilos específicos del módulo -->
+<style>
+/* Communications Status Bar */
+.communications-status-bar {
+    animation: pulse-glow-blue 3s infinite;
+}
+
+@keyframes pulse-glow-blue {
+    0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+    50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
+}
+
+.communication-indicator {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(59, 130, 246, 0.2);
+    border: 2px solid #3b82f6;
+}
+
+.communication-indicator.active {
+    animation: pulse 2s infinite;
+}
+
+/* Message Filters */
+.message-filters {
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+/* Messages List */
+.messages-list {
+    space-y: 1.5rem;
+}
+
+.message-item {
+    background: rgba(51, 65, 85, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.message-item:hover {
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+}
+
+.message-item.unread {
+    border-left: 4px solid #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.message-item.urgent {
+    border-left: 4px solid #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.message-item.read {
+    opacity: 0.8;
+}
+
+.message-item.replied {
+    border-left: 4px solid #22c55e;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.message-sender {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sender-avatar {
+    flex-shrink: 0;
+}
+
+.system-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(107, 114, 128, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+}
+
+.sender-name {
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.sender-unit {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.message-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.message-type {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.875rem;
+}
+
+.message-type.email {
+    background: #3b82f6;
+}
+
+.message-type.whatsapp {
+    background: #25d366;
+}
+
+.message-type.sms {
+    background: #10b981;
+}
+
+.message-type.notification {
+    background: #8b5cf6;
+}
+
+.message-priority {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.75rem;
+}
+
+.message-priority.urgent {
+    background: #ef4444;
+}
+
+.message-status {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50
+.message-status {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.75rem;
+}
+
+.message-status.replied {
+    background: #22c55e;
+}
+
+.message-time {
+    color: #6b7280;
+    font-size: 0.75rem;
+}
+
+.message-content {
+    margin-bottom: 1rem;
+}
+
+.message-subject {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.message-preview {
+    color: #94a3b8;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+}
+
+.message-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.tag-urgent {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.tag-maintenance {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.tag-info {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.tag-amenities {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.tag-authorization {
+    background-color: rgba(168, 85, 247, 0.2);
+    color: #a855f7;
+}
+
+.tag-visitor {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.tag-feedback {
+    background-color: rgba(139, 92, 246, 0.2);
+    color: #a78bfa;
+}
+
+.tag-positive {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.tag-reminder {
+    background-color: rgba(107, 114, 128, 0.2);
+    color: #9ca3af;
+}
+
+.tag-assembly {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.message-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Quick Actions */
+.quick-actions {
+    space-y: 0.75rem;
+}
+
+.quick-action-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(51, 65, 85, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.5rem;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.quick-action-btn:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
+}
+
+.quick-action-btn.new-message {
+    border-left: 4px solid #3b82f6;
+}
+
+.quick-action-btn.broadcast {
+    border-left: 4px solid #22c55e;
+}
+
+.quick-action-btn.notification {
+    border-left: 4px solid #8b5cf6;
+}
+
+.quick-action-btn.schedule {
+    border-left: 4px solid #f59e0b;
+}
+
+.quick-action-btn.emergency {
+    border-left: 4px solid #ef4444;
+}
+
+/* Daily Stats */
+.daily-stats {
+    space-y: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 0.5rem;
+}
+
+.stat-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+.stat-info {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: white;
+}
+
+.stat-label {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+/* Communication Channels */
+.communication-channels {
+    space-y: 1rem;
+}
+
+.channel-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 0.5rem;
+}
+
+.channel-item.active {
+    border-left: 4px solid #22c55e;
+}
+
+.channel-item.maintenance {
+    border-left: 4px solid #f59e0b;
+    opacity: 0.7;
+}
+
+.channel-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+.channel-icon.email {
+    background: #3b82f6;
+}
+
+.channel-icon.whatsapp {
+    background: #25d366;
+}
+
+.channel-icon.sms {
+    background: #10b981;
+}
+
+.channel-icon.push {
+    background: #8b5cf6;
+}
+
+.channel-info {
+    flex: 1;
+}
+
+.channel-name {
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.channel-status {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.channel-stats {
+    text-align: right;
+}
+
+.channel-count {
+    color: #60a5fa;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* Compose Form */
+.compose-form {
+    max-width: none;
+}
+
+.message-config {
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Recipients Selector */
+.recipients-section {
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.recipients-selector {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.selector-tabs {
+    display: flex;
+    background: rgba(30, 41, 59, 0.5);
+}
+
+.selector-tab {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.selector-tab.active {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.selector-content {
+    padding: 1rem;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.recipient-search {
+    margin-bottom: 1rem;
+}
+
+.recipients-list {
+    max-height: 200px;
+    overflow-y: auto;
+    space-y: 0.5rem;
+}
+
+.recipient-item {
+    display: flex;
+    align-items: center;
+}
+
+.recipient-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex: 1;
+}
+
+.recipient-label:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.recipient-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.recipient-name {
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.recipient-unit {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.groups-list {
+    space-y: 0.75rem;
+}
+
+.group-item {
+    display: flex;
+    align-items: center;
+}
+
+.group-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex: 1;
+}
+
+.group-label:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.group-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.group-name {
+    color: white;
+    font-weight: 600;
+}
+
+.group-count {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.all-recipients {
+    padding: 1rem;
+}
+
+.all-option {
+    display: flex;
+    align-items: center;
+}
+
+.all-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex: 1;
+}
+
+.all-label:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.all-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.all-name {
+    color: white;
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.all-count {
+    color: #94a3b8;
+}
+
+/* Message Editor */
+.message-content-section {
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.message-editor {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.editor-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    background: rgba(30, 41, 59, 0.5);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.editor-btn {
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.editor-btn:hover {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.editor-separator {
+    width: 1px;
+    height: 1.5rem;
+    background: rgba(148, 163, 184, 0.2);
+    margin: 0 0.5rem;
+}
+
+.message-textarea {
+    width: 100%;
+    padding: 1rem;
+    background: transparent;
+    border: none;
+    color: white;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.message-textarea:focus {
+    outline: none;
+}
+
+.message-textarea::placeholder {
+    color: #6b7280;
+}
+
+/* File Upload */
+.attachments-section {
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.file-upload-area {
+    border: 2px dashed rgba(148, 163, 184, 0.3);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.file-upload-area:hover {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.upload-zone {
+    cursor: pointer;
+}
+
+.attached-files {
+    margin-top: 1rem;
+    space-y: 0.5rem;
+}
+
+.attachment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.375rem;
+}
+
+.attachment-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.attachment-name {
+    color: white;
+    font-weight: 600;
+}
+
+.attachment-size {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.remove-attachment {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: none;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    cursor: pointer;
+}
+
+/* Advanced Options */
+.advanced-options {
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.options-toggle {
+    margin-bottom: 1rem;
+}
+
+.toggle-btn {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.toggle-btn:hover {
+    color: white;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #94a3b8;
+    cursor: pointer;
+}
+
+.checkbox {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 0.25rem;
+}
+
+/* Form Actions */
+.form-actions {
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+/* Broadcast List */
+.broadcast-list {
+    space-y: 1.5rem;
+}
+
+.broadcast-item {
+    background: rgba(51, 65, 85, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.broadcast-item.sent {
+    border-left: 4px solid #22c55e;
+}
+
+.broadcast-item.scheduled {
+    border-left: 4px solid #f59e0b;
+}
+
+.broadcast-item.draft {
+    border-left: 4px solid #6b7280;
+}
+
+.broadcast-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.broadcast-type {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+}
+
+.broadcast-type.announcement {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.broadcast-type.maintenance {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.broadcast-type.event {
+    background: rgba(168, 85, 247, 0.2);
+    color: #a855f7;
+}
+
+.broadcast-status {
+    text-align: right;
+}
+
+.broadcast-time {
+    color: #6b7280;
+    font-size: 0.75rem;
+}
+
+.broadcast-content {
+    margin-bottom: 1rem;
+}
+
+.broadcast-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.broadcast-preview {
+    color: #94a3b8;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.broadcast-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.broadcast-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Status Badges */
+.status-sent {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.status-scheduled {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.status-draft {
+    background-color: rgba(107, 114, 128, 0.2);
+    color: #9ca3af;
+}
+
+.status-active {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.status-expired {
+    background-color: rgba(107, 114, 128, 0.2);
+    color: #9ca3af;
+}
+
+.status-paused {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+/* Performance Metrics */
+.performance-metrics {
+    space-y: 1rem;
+}
+
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.375rem;
+}
+
+.metric-label {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.metric-value {
+    color: white;
+    font-weight: 600;
+}
+
+.metric-change {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.metric-change.positive {
+    color: #22c55e;
+}
+
+.metric-change.negative {
+    color: #ef4444;
+}
+
+/* Performance Chart */
+.performance-chart {
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.chart-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.chart-bars-broadcast {
+    display: flex;
+    justify-content: space-around;
+    align-items: end;
+    height: 120px;
+}
+
+.broadcast-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.bar-week {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.bar-container {
+    width: 20px;
+    height: 80px;
+    background: rgba(107, 114, 128, 0.3);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.bar-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: #3b82f6;
+    border-radius: 2px 2px 0 0;
+    transition: height 0.3s ease;
+}
+
+.bar-value {
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Broadcast Types */
+.broadcast-types {
+    space-y: 1rem;
+}
+
+.type-stat {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.type-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+.type-info {
+    flex: 1;
+}
+
+.type-name {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.type-count {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.type-percentage {
+    color: white;
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+/* Best Times */
+.best-times {
+    space-y: 1rem;
+}
+
+.time-slot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.375rem;
+}
+
+.time-period {
+    color: white;
+    font-weight: 600;
+}
+
+.time-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.time-rate {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.time-bar {
+    width: 60px;
+    height: 4px;
+    background: rgba(107, 114, 128, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.time-fill {
+    height: 100%;
+    background: #22c55e;
+    border-radius: 2px;
+}
+
+/* Template Categories */
+.template-categories {
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+.category-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.category-tab {
+    padding: 0.5rem 1rem;
+    background: rgba(71, 85, 105, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.375rem;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.category-tab.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+/* Templates Grid */
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.template-card {
+    background: rgba(51, 65, 85, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.template-card:hover {
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+}
+
+.template-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: rgba(30, 41, 59, 0.5);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.template-category {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.template-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.template-action-btn {
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.template-action-btn:hover {
+    background: rgba(59, 130, 246, 0.3);
+}
+
+.template-content {
+    padding: 1.5rem;
+}
+
+.template-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.template-description {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.template-preview {
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.template-preview p {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.template-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.usage-count {
+    color: #60a5fa;
+}
+
+.last-used {
+    color: #94a3b8;
+}
+
+/* Notifications List */
+.notifications-list {
+    space-y: 1.5rem;
+}
+
+.notification-item {
+    background: rgba(51, 65, 85, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.notification-item.active {
+    border-left: 4px solid #22c55e;
+}
+
+.notification-item.scheduled {
+    border-left: 4px solid #f59e0b;
+}
+
+.notification-item.sent {
+    border-left: 4px solid #3b82f6;
+}
+
+.notification-item.expired {
+    border-left: 4px solid #6b7280;
+    opacity: 0.7;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.notification-type {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+}
+
+.notification-type.push {
+    background: rgba(139, 92, 246, 0.2);
+    color: #a78bfa;
+}
+
+.notification-type.email {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.notification-type.sms {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.notification-type.in-app {
+    background: rgba(107, 114, 128, 0.2);
+    color: #9ca3af;
+}
+
+.notification-priority {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.notification-priority.high {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.notification-priority.normal {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.notification-priority.urgent {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.notification-content {
+    margin-bottom: 1rem;
+}
+
+.notification-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.notification-message {
+    color: #94a3b8;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.notification-details {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #94a3b8;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Channel Settings */
+.channel-settings {
+    space-y: 2rem;
+}
+
+.channel-setting {
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.channel-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.channel-icon-large {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+}
+
+.channel-icon-large.push {
+    background: #8b5cf6;
+}
+
+.channel-icon-large.email {
+    background: #3b82f6;
+}
+
+.channel-icon-large.sms {
+    background: #10b981;
+}
+
+.channel-toggle {
+    margin-left: auto;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 3rem;
+    height: 1.5rem;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #374151;
+    transition: 0.4s;
+    border-radius: 1.5rem;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 1.125rem;
+    width: 1.125rem;
+    left: 0.1875rem;
+    bottom: 0.1875rem;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #3b82f6;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(1.5rem);
+}
+
+.channel-options {
+    space-y: 1rem;
+}
+
+.option-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.option-label {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+/* Automations */
+.automations-list {
+    space-y: 1.5rem;
+}
+
+.automation-item {
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.automation-item.active {
+    border-left: 4px solid #22c55e;
+}
+
+.automation-item.paused {
+    border-left: 4px solid #f59e0b;
+    opacity: 0.8;
+}
+
+.automation-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.automation-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #60a5fa;
+    font-size: 1rem;
+}
+
+.automation-info {
+    flex: 1;
+}
+
+.automation-name {
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.automation-description {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.automation-stats {
+    margin-bottom: 1rem;
+}
+
+.automation-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Notification Stats */
+.notification-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.stat-card {
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.stat-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+/* Analytics Chart */
+.analytics-chart {
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 1rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #94a3b8;
+}
+
+.legend-color {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 0.125rem;
+}
+
+.chart-area {
+    height: 200px;
+    position: relative;
+}
+
+.chart-lines {
+    height: 160px;
+    position: relative;
+}
+
+.line-chart {
+    position: relative;
+    height: 100%;
+}
+
+.chart-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.grid-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(148, 163, 184, 0.1);
+}
+
+.data-points {
+    position: relative;
+    height: 100%;
+}
+
+.data-point {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.data-point.sent {
+    background: #3b82f6;
+}
+
+.chart-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+/* Key Metrics */
+.key-metrics {
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.metric-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 0.5rem;
+}
+
+.metric-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+.metric-data {
+    text-align: center;
+}
+
+.metric-number {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: white;
+}
+
+/* Channel Analytics */
+.channel-analytics {
+    space-y: 1.5rem;
+}
+
+.channel-metric {
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.channel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.channel-name {
+    color: white;
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.channel-percentage {
+    color: white;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.channel-stats {
+    margin-bottom: 1rem;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.stat-value {
+    color: white;
+    font-weight: 600;
+}
+
+.channel-progress {
+    height: 4px;
+    background: rgba(107, 114, 128, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* Optimal Times */
+.optimal-times {
+    space-y: 2rem;
+}
+
+.time-analysis {
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.analysis-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.day-stats,
+.hour-stats {
+    space-y: 0.75rem;
+}
+
+.day-item,
+.hour-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+}
+
+.day-item.best,
+.hour-item.best {
+    background: rgba(34, 197, 94, 0.2);
+    border-left: 4px solid #22c55e;
+}
+
+.day-item.good,
+.hour-item.good {
+    background: rgba(59, 130, 246, 0.2);
+    border-left: 4px solid #3b82f6;
+}
+
+.day-item.average,
+.hour-item.average {
+    background: rgba(245, 158, 11, 0.2);
+    border-left: 4px solid #f59e0b;
+}
+
+.day-name,
+.hour-range {
+    color: white;
+    font-weight: 600;
+}
+
+.day-rate,
+.hour-rate {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+/* Popular Topics */
+.popular-topics {
+    space-y: 1rem;
+}
+
+.topic-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.5rem;
+}
+
+.topic-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+.topic-info {
+    flex: 1;
+}
+
+.topic-name {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.topic-stats {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.topic-engagement {
+    color: white;
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+/* Satisfaction */
+.satisfaction-metrics {
+    text-align: center;
+}
+
+.satisfaction-score {
+    margin-bottom: 2rem;
+}
+
+.score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(#22c55e 0deg 331deg, rgba(107, 114, 128, 0.3) 331deg 360deg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    position: relative;
+}
+
+.score-circle::before {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: #1e293b;
+    border-radius: 50%;
+}
+
+.score-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    z-index: 1;
+}
+
+.score-max {
+    font-size: 1rem;
+    color: #94a3b8;
+    z-index: 1;
+}
+
+.score-label {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.satisfaction-breakdown {
+    space-y: 1rem;
+    margin-bottom: 2rem;
+}
+
+.breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.breakdown-label {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.breakdown-stars {
+    display: flex;
+    gap: 0.125rem;
+}
+
+.feedback-summary {
+    text-align: left;
+}
+
+.feedback-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.feedback-items {
+    space-y: 0.75rem;
+}
+
+.feedback-item {
+    display: flex;
+    align-items: start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(71, 85, 105, 0.3);
+    border-radius: 0.375rem;
+}
+
+.feedback-item.positive {
+    border-left: 4px solid #22c55e;
+}
+
+.feedback-item.neutral {
+    border-left: 4px solid #f59e0b;
+}
+
+.feedback-item span {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .templates-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .notification-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .channel-analytics .channel-metric {
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .message-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .broadcast-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .notification-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .message-actions,
+    .broadcast-actions,
+    .notification-actions {
+        justify-content: center;
+    }
+    
+    .selector-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .category-tabs {
+        justify-content: center;
+    }
+    
+    .templates-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-bars-broadcast {
+        gap: 0.5rem;
+    }
+    
+    .broadcast-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .notification-details {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .communications-status-bar .flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .message-item {
+        padding: 1rem;
+    }
+    
+    .broadcast-item {
+        padding: 1rem;
+    }
+    
+    .notification-item {
+        padding: 1rem;
+    }
+    
+    .template-card {
+        margin-bottom: 1rem;
+    }
+    
+    .channel-setting {
+        padding: 1rem;
+    }
+    
+    .automation-item {
+        padding: 1rem;
+    }
+    
+    .form-actions .flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .module-header,
+    .section-tabs,
+    .btn-primary,
+    .btn-secondary,
+    .btn-xs,
+    .message-actions,
+    .broadcast-actions,
+    .notification-actions {
+        display: none !important;
+    }
+    
+    .glass-card {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+    }
+    
+    .message-item,
+    .broadcast-item,
+    .notification-item {
+        background: white !important;
+        border: 1px solid #ccc !important;
+        break-inside: avoid;
+    }
+    
+    .text-white {
+        color: black !important;
+    }
+    
+    .text-gray-400 {
+        color: #666 !important;
+    }
+}
+
+/* Accessibility */
+.message-item:focus,
+.broadcast-item:focus,
+.notification-item:focus,
+.template-card:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.quick-action-btn:focus,
+.template-action-btn:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .message-item,
+    .broadcast-item,
+    .notification-item,
+    .template-card {
+        border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    .glass-card {
+        border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .message-item,
+    .broadcast-item,
+    .notification-item,
+    .template-card,
+    .quick-action-btn {
+        transition: none;
+    }
+    
+    .communication-indicator.active {
+        animation: none;
+    }
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #3b82f6;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-content {
+    animation: fadeIn 0.3s ease when entering;
+}
+
+/* Hover Effects */
+.message-item:hover .sender-name,
+.broadcast-item:hover .broadcast-title,
+.notification-item:hover .notification-title {
+    color: #60a5fa;
+}
+
+.template-card:hover .template-title {
+    color: #60a5fa;
+}
+</style>

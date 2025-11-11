@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CYBER-RESIDENT: Registro Biométrico | CondoConnect AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    /* VARIABLES DE COLOR */
+    :root {
+      --neon-blue: #4CC9F0;
+      --neon-purple: #9D4EDF;
+      --dark-bg: #0A0A1F;
+      --mid-bg: #16213E;
+    }
+
+    /* FONDO Y CÓDIGO ANIMADO */
+    body {
+      background: var(--dark-bg);
+      background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="0" y="10" font-size="10" fill="rgba(76, 201, 240, 0.05)">0101</text><text x="20" y="30" font-size="10" fill="rgba(76, 201, 240, 0.05)">1100</text><text x="40" y="50" font-size="10" fill="rgba(76, 201, 240, 0.05)">0111</text><text x="60" y="70" font-size="10" fill="rgba(76, 201, 240, 0.05)">1010</text></svg>');
+      animation: matrix-scroll 200s linear infinite;
+    }
+
+    @keyframes matrix-scroll {
+      from { background-position: 0 0; }
+      to { background-position: 10000px 10000px; }
+    }
+
+    /* ESTILO GLASS FUTURISTA */
+    .glass-neon {
+      background: rgba(10, 10, 31, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--neon-blue); /* Borde cian */ /* Source: 3 (Original border color used) */
+      box-shadow: 0 0 20px rgba(76, 201, 240, 0.4); /* Resplandor neón */
+      transition: all 0.3s ease;
+    }
+    .glass-neon:hover {
+        box-shadow: 0 0 30px rgba(76, 201, 240, 0.6), 0 0 5px rgba(157, 78, 255, 0.8); /* Resplandor doble */
+    }
+
+    /* TÍTULOS Y TEXTO NEÓN */
+    .neon-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--neon-blue); /* Source: 4 (Original color used) */
+      text-shadow: 0 0 10px var(--neon-blue);
+      letter-spacing: 0.1em;
+    }
+    .neon-subtitle {
+      color: #D946EF; /* Magenta neón */
+    }
+    .section-header {
+      border-bottom: 2px solid var(--neon-purple);
+      box-shadow: 0 2px 5px rgba(157, 78, 255, 0.5);
+    }
+    
+    /* INPUTS FUTURISTAS */
+    input:not([type="file"]), select, textarea {
+      background-color: var(--mid-bg);
+      border: 2px solid var(--neon-purple);
+      color: #E0E0E0;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 5px rgba(157, 78, 255, 0.3);
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 15px var(--neon-blue);
+    }
+    
+    /* CAJA DE PREVISUALIZACIÓN (SCANNER) */
+    .scanner-box {
+      border: 2px solid var(--neon-blue); /* Source: 5 (Original border style used) */
+      background-color: rgba(76, 201, 240, 0.08); /* Source: 5 (Original background color used) */
+      position: relative;
+      overflow: hidden;
+    }
+    .scan-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #39FF14, transparent); /* Verde neón */
+      animation: scan-move 4s infinite linear;
+    }
+    @keyframes scan-move {
+      0% { top: 0; }
+      50% { top: calc(100% - 3px); }
+      100% { top: 0; }
+    }
+
+    /* BOTONES */
+    .btn-neon {
+      font-weight: 700;
+      text-transform: uppercase;
+      box-shadow: 0 0 10px rgba(76, 201, 240, 0.6);
+      transition: all 0.2s ease;
+    }
+    .btn-neon:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(76, 201, 240, 1), 0 0 30px rgba(157, 78, 255, 1);
+    }
+
+    /* VIDEO FEED */
+    #video {
+      border: 3px solid var(--neon-purple);
+      box-shadow: 0 0 15px var(--neon-purple);
+    } /* Source: 7 (Original video style used) */
+  </style>
+</head>
+<body class="text-gray-100 min-h-screen flex items-center justify-center p-8 font-mono">
+
+  <div class="max-w-7xl w-full">
+    <header class="glass-neon rounded-2xl p-8 mb-10 flex flex-col md:flex-row items-center justify-between">
+      <div class="text-center md:text-left">
+        <h1 class="neon-title mb-2 flex items-center justify-center md:justify-start">
+          <i class="fas fa-microchip mr-4 text-cyan-400"></i> 
+          CYBER-RESIDENT PROTOCOL
+        </h1>
+        <p class="text-base font-light text-purple-300">
+          Módulo de Alta de Residente - Validación Biométrico-IA de Nivel 4
+        </p>
+      </div>
+      <div class="logo-container mt-6 md:mt-0">
+        <img src="/attachments/b1CzBiajmZ65hiVzwSDeT.png" alt="Logo CondoConnect AI" 
+        class="rounded-lg max-h-[100px] object-contain filter drop-shadow-[0_0_15px_rgba(76,201,240,0.8)]" /> </div>
+    </header>
+
+    <div class="glass-neon rounded-2xl p-8 space-y-12">
+      
+      <section>
+        <h2 class="section-header text-xl font-bold text-white mb-6 pb-3 flex items-center">
+          <i class="fas fa-user-shield mr-3 text-2xl text-cyan-400"></i> 
+          [01] ACCESO CORE & UNIDAD DE ASIGNACIÓN
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <input type="text" placeholder="Nombre completo" class="p-4" required />
+          <input type="email" placeholder="Correo electrónico" class="p-4" required />
+          <input type="tel" placeholder="Teléfono de contacto" class="p-4" /> <input type="text" placeholder="Unidad ID (Ej. A-205)" class="p-4" required /> <select class="p-4" required>
+            <option disabled selected>Condominio</option>
+            <option>Altos del Sur</option>
+            <option>Business Center</option>
+            <option>Villas del Sol</option>
+          </select>
+          <select class="p-4" required>
+            <option disabled selected>Rol de Acceso</option>
+            <option>Propietario</option> <option>Inquilino</option> <option>Familiar</option> </select>
+          <input type="number" placeholder="Estacionamiento (Slots)" min="0" class="p-4" />
+          <input type="text" placeholder="Empleados Asignados" class="p-4" />
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-header text-xl font-bold text-white mb-6 pb-3 flex items-center">
+          <i class="fas fa-fingerprint mr-3 text-2xl text-purple-400"></i> 
+          [02] MÓDULO DE CAPTURA BIOMÉTRICA
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <button onclick="activarCamara()" class="btn-neon bg-cyan-500 text-dark-bg p-4 rounded-lg w-full mb-4 flex items-center justify-center">
+                    <i class="fas fa-video mr-3"></i> INICIAR ESCANEO FACIAL
+                </button>
+                <video id="video" autoplay muted class="w-full rounded-lg"></video>
+
+                <div class="flex space-x-4 mt-4">
+                    <input type="file" accept="image/*" class="w-1/2 text-sm text-gray-300 file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0 file:text-sm file:font-semibold
+                    file:bg-purple-600 file:text-white hover:file:bg-purple-700 cursor-pointer" /> <select class="w-1/2 p-4"> <option selected>STATUS: IA ACTIVADA (Online)</option>
+                        <option>STATUS: IA DESACTIVADA (Manual)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="scanner-box p-6 rounded-lg text-center text-gray-300">
+                <div class="scan-line"></div>
+                <i class="fas fa-robot fa-3x mb-3 text-green-400"></i>
+                <p class="text-xl font-semibold mb-3 text-cyan-400">VALIDACIÓN EN PROGRESO</p>
+                <p>El sistema de Inteligencia Artificial realiza un análisis vectorial de más de **500 puntos** en el rostro.</p>
+                <p class="text-sm mt-4">Asociando identidad a la Unidad ID y creando una llave de acceso biométrico cifrada.</p> <div class="w-full h-2 bg-gray-700 rounded-full mt-6">
+                    <div id="progress-bar" class="h-2 bg-green-500 rounded-full transition-all duration-1000 ease-in-out" style="width: 0%"></div>
+                </div>
+                <p id="progress-text" class="text-sm mt-2 text-green-400">0% Analizado...</p>
+            </div>
+        </div>
+      </section>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <section class="lg:col-span-1">
+          <h2 class="section-header text-lg font-bold text-white mb-5 pb-2 flex items-center">
+            <i class="fas fa-users-cog mr-3 text-xl text-cyan-400"></i> 
+            [03] ACCESOS SECUNDARIOS
+          </h2> <textarea rows="4" placeholder="Integrantes familiares: Nombre, Parentesco, Edad (ej. Luisa Pérez, Esposa, 35)" 
+                    class="w-full p-3 rounded"></textarea>
+          <div class="scanner-box mt-4 p-3 text-xs text-gray-300">
+            <div class="scan-line" style="animation-duration: 6s;"></div>
+            <i class="fas fa-brain mr-2 text-yellow-400"></i> 
+            Envío de solicitudes de validación de identidad automatizadas.
+          </div> </section>
+
+        <section>
+          <h2 class="section-header text-lg font-bold text-white mb-5 pb-2 flex items-center">
+            <i class="fas fa-car-side mr-3 text-xl text-purple-400"></i> 
+            [04] ASIGNACIÓN DE FLOTA
+          </h2> <textarea rows="4" placeholder="Vehículos: Marca, Color, Placas (ej. Tesla, Rojo Neón, ABCD-123)" class="w-full p-3 rounded"></textarea>
+        </section>
+        
+        <section>
+          <h2 class="section-header text-lg font-bold text-white mb-5 pb-2 flex items-center">
+            <i class="fas fa-paw mr-3 text-xl text-green-400"></i> 
+            [05] BIOSENSORES ANIMALES
+          </h2>
+          <input type="number" placeholder="Cantidad de Biomascotas" min="0" class="mb-3 p-4 w-full" />
+          <textarea rows="2" placeholder="Tipo, Nombre, Raza" class="w-full p-3 rounded"></textarea>
+        </section>
+      </div>
+
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end space-y-6 md:space-y-0">
+        <section class="w-full md:w-1/3">
+            <h2 class="section-header text-lg font-bold text-white mb-3 pb-2 flex items-center">
+                <i class="fas fa-sliders-h mr-3 text-xl text-cyan-400"></i> 
+                [06] AJUSTE DE PARÁMETROS
+            </h2>
+            <select class="w-full p-4">
+                <option>Departamento</option> <option>Casa</option> <option>Local</option> <option>Bodega</option> </select>
+            <div class="text-xs text-gray-400 mt-2">Los campos se reconfigurarán dinámicamente según el parámetro de propiedad.</div> </section>
+
+        <div class="w-full md:w-auto">
+          <button class="btn-neon bg-green-500 text-dark-bg p-5 rounded-lg w-full md:w-auto flex items-center justify-center">
+            <i class="fas fa-hdd mr-3"></i> SINCRONIZAR Y REGISTRAR RESIDENTE
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById("video");
+    const progressBar = document.getElementById("progress-bar");
+    const progressText = document.getElementById("progress-text");
+
+    function activarCamara() {
+      // Intenta acceder a la cámara de video
+      navigator.mediaDevices.getUserMedia({ video: true }) /* Source: 18 */
+        .then(stream => { 
+            video.srcObject = stream; 
+            video.play();
+            // Inicia la simulación del progreso de escaneo IA
+            simulateScan();
+        })
+        .catch(err => { 
+            alert("No se pudo acceder a la cámara. Revisa permisos: " + err); /* Source: 19 */
+        });
+    }
+
+    // SIMULACIÓN DE ESCANEO IA INTERACTIVO
+    function simulateScan() {
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 10) + 5; // Incremento aleatorio para realismo
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                progressText.textContent = "100% - VALIDACIÓN BIOMÉTRICA COMPLETA. ACCESO APROBADO.";
+                progressBar.classList.add('bg-green-400');
+                progressBar.classList.remove('bg-green-500');
+                progressBar.style.width = '100%';
+                
+            } else {
+                progressText.textContent = `${progress}% Analizado...`;
+                progressBar.style.width = `${progress}%`;
+            }
+        }, 300);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CondoconnectAI - Gestor Multi-Tenant</title>
+    <script src="https://unpkg.com/aws-amplify@latest/dist/aws-amplify.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Efectos Glass Morphism - Idéntico a tus archivos */
+        .glass-effect {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.8));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59,130,246,0.3);
+            box-shadow: 0 8px 32px rgba(59,130,246,0.1);
+        }
+
+        .metallic-surface {
+            background: linear-gradient(145deg, #0f172a, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a);
+            border: 1px solid rgba(59,130,246,0.4);
+            box-shadow: 0 4px 16px rgba(59,130,246,0.2);
+        }
+
+        .neon-glow {
+            box-shadow: 
+                0 0 5px rgba(59,130,246,0.5),
+                0 0 10px rgba(59,130,246,0.3),
+                0 0 15px rgba(59,130,246,0.2),
+                0 0 20px rgba(59,130,246,0.1);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(59,130,246,0.15);
+        }
+
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15,23,42,0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59,130,246,0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59,130,246,0.7);
+        }
+
+        /* Tenant status indicators */
+        .tenant-active {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            box-shadow: 0 0 10px rgba(34,197,94,0.5);
+        }
+
+        .tenant-inactive {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            box-shadow: 0 0 10px rgba(107,114,128,0.5);
+        }
+
+        .tenant-suspended {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 0 10px rgba(239,68,68,0.5);
+        }
+
+        .tenant-trial {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 0 10px rgba(245,158,11,0.5);
+        }
+
+        /* Plan type badges */
+        .plan-basic {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        .plan-professional {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .plan-enterprise {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+        }
+
+        .plan-custom {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        /* Usage indicators */
+        .usage-low {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+        }
+
+        .usage-medium {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .usage-high {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        /* Tenant card animations */
+        .tenant-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(59,130,246,0.2);
+        }
+
+        .tenant-card:hover {
+            border-color: rgba(59,130,246,0.5);
+            transform: translateY(-4px);
+        }
+
+        /* Modal backdrop */
+        .modal-backdrop {
+            background: rgba(15,23,42,0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Resource usage charts */
+        .usage-chart {
+            height: 200px;
+            background: rgba(15,23,42,0.8);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .usage-bar {
+            position: absolute;
+            bottom: 0;
+            width: 20px;
+            background: linear-gradient(to top, #3b82f6, #60a5fa);
+            border-radius: 2px 2px 0 0;
+            transition: height 0.3s ease;
+        }
+
+        /* Deployment status */
+        .deployment-pending {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .deployment-active {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+
+        .deployment-failed {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        /* Real-time pulse */
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Tenant isolation indicator */
+        .isolation-secure {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .isolation-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+    <!-- Header fijo -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo y título -->
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 rounded-full border-2 border-blue-500 flex items-center justify-center">
+                        <i class="fas fa-building text-blue-400"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">Gestor Multi-Tenant</h1>
+                        <p class="text-sm text-blue-300">Administración de clientes CondoconnectAI</p>
+                    </div>
+                </div>
+
+                <!-- Estado del sistema -->
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full tenant-active pulse-dot"></div>
+                        <span class="text-green-400 text-sm font-medium">Sistema Multi-Tenant</span>
+                    </div>
+                    <div class="text-blue-300 text-sm">
+                        <i class="fas fa-server mr-1"></i>
+                        <span id="activeTenants">0</span> tenants activos
+                    </div>
+                    <button onclick="showCreateTenantModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg neon-glow transition-all duration-300">
+                        <i class="fas fa-plus mr-2"></i>Nuevo Tenant
+                    </button>
+                    <button onclick="refreshTenants()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-all duration-300">
+                        <i class="fas fa-sync-alt mr-2"></i>Actualizar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="pt-20 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Estadísticas globales -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Tenants Activos -->
+                <div class="glass-effect rounded-xl p-6 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-300 text-sm font-medium">Tenants Activos</p>
+                            <p class="text-3xl font-bold text-white" id="activeTenantsCount">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-400">
+                        <i class="fas fa-arrow-up text-green-400 mr-1"></i>
+                        +15% vs mes anterior
+                    </div>
+                </div>
+
+                <!-- Usuarios Totales -->
+                <div class="glass-effect rounded-xl p-6 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-300 text-sm font-medium">Usuarios Totales</p>
+                            <p class="text-3xl font-bold text-white" id="totalUsers">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-blue-400 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-400">
+                        Across all tenants
+                    </div>
+                </div>
+
+                <!-- Ingresos Mensuales -->
+                <div class="glass-effect rounded-xl p-6 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-300 text-sm font-medium">Ingresos Mensuales</p>
+                            <p class="text-3xl font-bold text-white" id="monthlyRevenue">$0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-dollar-sign text-purple-400 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-400">
+                        <i class="fas fa-arrow-up text-green-400 mr-1"></i>
+                        +8% vs mes anterior
+                    </div>
+                </div>
+
+                <!-- Uso de Recursos -->
+                <div class="glass-effect rounded-xl p-6 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-300 text-sm font-medium">Uso de Recursos</p>
+                            <p class="text-3xl font-bold text-white" id="resourceUsage">0%</p>
+                        </div>
+                        <div class="w-12 h-12 bg-yellow-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-server text-yellow-400 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-400">
+                        Capacidad total del sistema
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros y búsqueda -->
+            <div class="glass-effect rounded-xl p-6 mb-8">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" id="searchTenants" placeholder="Buscar tenant..." 
+                                   class="bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-2 pl-10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <select id="statusFilter" onchange="filterTenants()" class="bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-2 text-white">
+                            <option value="">Todos los estados</option>
+                            <option value="active">Activos</option>
+                            <option value="trial">En prueba</option>
+                            <option value="suspended">Suspendidos</option>
+                            <option value="inactive">Inactivos</option>
+                        </select>
+                        <select id="planFilter" onchange="filterTenants()" class="bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-2 text-white">
+                            <option value="">Todos los planes</option>
+                            <option value="basic">Básico</option>
+                            <option value="professional">Profesional</option>
+                            <option value="enterprise">Empresarial</option>
+                            <option value="custom">Personalizado</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="showBulkActionsModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-300">
+                            <i class="fas fa-tasks mr-2"></i>Acciones Masivas
+                        </button>
+                        <button onclick="exportTenants()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all duration-300">
+                            <i class="fas fa-download mr-2"></i>Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid de tenants -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8" id="tenantsGrid">
+                <!-- Tenants dinámicos -->
+            </div>
+
+            <!-- Panel de monitoreo en tiempo real -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Uso de recursos por tenant -->
+                <div class="glass-effect rounded-xl overflow-hidden">
+                    <div class="p-6 border-b border-blue-500 border-opacity-30">
+                        <h2 class="text-xl font-bold text-white">
+                            <i class="fas fa-chart-bar mr-2 text-blue-400"></i>Uso de Recursos
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4" id="resourceUsageChart">
+                            <!-- Gráfico de uso dinámico -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actividad reciente -->
+                <div class="glass-effect rounded-xl overflow-hidden">
+                    <div class="p-6 border-b border-blue-500 border-opacity-30">
+                        <h2 class="text-xl font-bold text-white">
+                            <i class="fas fa-clock mr-2 text-blue-400"></i>Actividad Reciente
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4" id="recentActivity">
+                            <!-- Actividad dinámica -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Nuevo Tenant -->
+    <div id="createTenantModal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop fixed inset-0" onclick="hideCreateTenantModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="glass-effect rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b border-blue-500 border-opacity-30">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-white">
+                            <i class="fas fa-plus-circle mr-2 text-blue-400"></i>Crear Nuevo Tenant
+                        </h3>
+                        <button onclick="hideCreateTenantModal()" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <form id="createTenantForm" class="space-y-6">
+                        <!-- Información básica -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Nombre del Tenant</label>
+                                <input type="text" id="tenantName" required
+                                       class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Subdominio</label>
+                                <div class="flex">
+                                    <input type="text" id="tenantSubdomain" required
+                                           class="flex-1 bg-gray-800 border border-blue-500 border-opacity-30 rounded-l-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <span class="bg-gray-700 border border-l-0 border-blue-500 border-opacity-30 rounded-r-lg px-4 py-3 text-gray-300">.condoconnectai.com</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Email de Contacto</label>
+                                <input type="email" id="tenantEmail" required
+                                       class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Teléfono</label>
+                                <input type="tel" id="tenantPhone"
+                                       class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                        </div>
+
+                        <!-- Configuración del plan -->
+                        <div>
+                            <label class="block text-sm font-medium text-blue-300 mb-4">Plan de Suscripción</label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <label class="tenant-card p-4 rounded-lg cursor-pointer">
+                                    <input type="radio" name="tenantPlan" value="basic" class="sr-only">
+                                    <div class="text-center">
+                                        <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium plan-basic mb-2">
+                                            BÁSICO
+                                        </div>
+                                        <div class="text-white font-bold text-lg">$299</div>
+                                        <div class="text-gray-400 text-sm">/mes</div>
+                                        <div class="text-xs text-gray-400 mt-2">
+                                            • Hasta 50 usuarios<br>
+                                            • Módulo institucional<br>
+                                            • Soporte básico
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="tenant-card p-4 rounded-lg cursor-pointer">
+                                    <input type="radio" name="tenantPlan" value="professional" class="sr-only" checked>
+                                    <div class="text-center">
+                                        <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium plan-professional mb-2">
+                                            PROFESIONAL
+                                        </div>
+                                        <div class="text-white font-bold text-lg">$599</div>
+                                        <div class="text-gray-400 text-sm">/mes</div>
+                                        <div class="text-xs text-gray-400 mt-2">
+                                            • Hasta 200 usuarios<br>
+                                            • Todos los módulos<br>
+                                            • Soporte prioritario
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="tenant-card p-4 rounded-lg cursor-pointer">
+                                    <input type="radio" name="tenantPlan" value="enterprise" class="sr-only">
+                                    <div class="text-center">
+                                        <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium plan-enterprise mb-2">
+                                            EMPRESARIAL
+                                        </div>
+                                        <div class="text-white font-bold text-lg">$1299</div>
+                                        <div class="text-gray-400 text-sm">/mes</div>
+                                        <div class="text-xs text-gray-400 mt-2">
+                                            • Usuarios ilimitados<br>
+                                            • Módulos personalizados<br>
+                                            • Soporte 24/7
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="tenant-card p-4 rounded-lg cursor-pointer">
+                                    <input type="radio" name="tenantPlan" value="custom" class="sr-only">
+                                    <div class="text-center">
+                                        <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium plan-custom mb-2">
+                                            PERSONALIZADO
+                                        </div>
+                                        <div class="text-white font-bold text-lg">Custom</div>
+                                        <div class="text-gray-400 text-sm">Cotización</div>
+                                        <div class="text-xs text-gray-400 mt-2">
+                                            • Configuración única<br>
+                                            • Integraciones especiales<br>
+                                            • SLA personalizado
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Módulos a desplegar -->
+                        <div>
+                            <label class="block text-sm font-medium text-blue-300 mb-4">Módulos a Desplegar</label>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <label class="flex items-center space-x-3 p-4 bg-gray-800 bg-opacity-50 rounded-lg cursor-pointer hover:bg-opacity-70 transition-all">
+                                    <input type="checkbox" id="moduleInstitucional" value="institucional" checked class="text-blue-600 bg-gray-800 border-blue-500 rounded">
+                                    <div>
+                                        <div class="text-white font-medium">Institucional</div>
+                                        <div class="text-gray-400 text-sm">Gestión de condominios</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-center space-x-3 p-4 bg-gray-800 bg-opacity-50 rounded-lg cursor-pointer hover:bg-opacity-70 transition-all">
+                                    <input type="checkbox" id="moduleSeguridad" value="seguridad" class="text-blue-600 bg-gray-800 border-blue-500 rounded">
+                                    <div>
+                                        <div class="text-white font-medium">Empresa Seguridad</div>
+                                        <div class="text-gray-400 text-sm">Gestión de seguridad</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-center space-x-3 p-4 bg-gray-800 bg-opacity-50 rounded-lg cursor-pointer hover:bg-opacity-70 transition-all">
+                                    <input type="checkbox" id="modulePropiedades" value="propiedades" class="text-blue-600 bg-gray-800 border-blue-500 rounded">
+                                    <div>
+                                        <div class="text-white font-medium">Propiedades</div>
+                                        <div class="text-gray-400 text-sm">Gestión inmobiliaria</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Configuración avanzada -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Límite de Usuarios</label>
+                                <input type="number" id="userLimit" min="1" value="100"
+                                       class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Límite de Almacenamiento (GB)</label>
+                                <input type="number" id="storageLimit" min="1" value="50"
+                                       class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-blue-300 mb-2">Notas Adicionales</label>
+                            <textarea id="tenantNotes" rows="3"
+                                      class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="p-6 border-t border-blue-500 border-opacity-30 flex justify-end space-x-3">
+                    <button onclick="hideCreateTenantModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-all duration-300">
+                        Cancelar
+                    </button>
+                    <button onclick="createTenant()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg neon-glow transition-all duration-300">
+                        <i class="fas fa-rocket mr-2"></i>Crear y Desplegar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de notificaciones -->
+    <div id="notificationToast" class="fixed top-4 right-4 z-50 hidden">
+        <div class="glass-effect rounded-lg p-4 max-w-sm">
+            <div class="flex items-center space-x-3">
+                <i id="toastIcon" class="fas fa-info-circle text-blue-400"></i>
+                <div>
+                    <p class="text-white font-medium">CondoconnectAI</p>
+                    <p id="toastMessage" class="text-blue-300 text-sm"></p>
+                </div>
+                <button onclick="hideNotification()" class="text-gray-400 hover:text-white ml-auto">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración AWS
+        const awsConfig = {
+            region: 'us-east-1',
+            userPoolId: 'us-east-1_XXXXXXXXX',
+            userPoolWebClientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX',
+            apiGatewayUrl: 'https://api.condoconnectai.com'
+        };
+
+        // Datos de tenants
+        let tenantsData = [
+            {
+                id: 'tenant_001',
+                name: 'Condominio Las Flores',
+                subdomain: 'lasflores',
+                email: 'admin@lasflores.com',
+                phone: '+52 55 1234 5678',
+                plan: 'professional',
+                status: 'active',
+                modules: ['institucional', 'propiedades'],
+                userLimit: 200,
+                currentUsers: 145,
+                storageLimit: 100,
+                currentStorage: 67,
+                monthlyRevenue: 599,
+                createdAt: '2024-01-15',
+                lastActivity: '2024-10-31 20:15:00',
+                deploymentStatus: 'active',
+                isolation: 'secure',
+                notes: 'Cliente premium con configuración personalizada'
+            },
+            {
+                id: 'tenant_002',
+                name: 'Seguridad Total S.A.',
+                subdomain: 'seguridadtotal',
+                email: 'contacto@seguridadtotal.com',
+                phone: '+52 33 9876 5432',
+                plan: 'enterprise',
+                status: 'active',
+                modules: ['institucional', 'seguridad', 'propiedades'],
+                userLimit: 500,
+                currentUsers: 387,
+                storageLimit: 250,
+                currentStorage: 189,
+                monthlyRevenue: 1299,
+                createdAt: '2024-02-01',
+                lastActivity: '2024-10-31 19:45:00',
+                deploymentStatus: 'active',
+                isolation: 'secure',
+                notes: 'Empresa de seguridad con múltiples contratos'
+            },
+            {
+                id: 'tenant_003',
+                name: 'Residencial Bosques',
+                subdomain: 'bosques',
+                email: 'admin@bosques.mx',
+                phone: '+52 81 5555 1234',
+                plan: 'basic',
+                status: 'trial',
+                modules: ['institucional'],
+                userLimit: 50,
+                currentUsers: 23,
+                storageLimit: 25,
+                currentStorage: 12,
+                monthlyRevenue: 0,
+                createdAt: '2024-10-15',
+                lastActivity: '2024-10-31 18:30:00',
+                deploymentStatus: 'active',
+                isolation: 'secure',
+                notes: 'Período de prueba - 15 días restantes'
+            },
+            {
+                id: 'tenant_004',
+                name: 'Torres del Centro',
+                subdomain: 'torrescentro',
+                email: 'gerencia@torrescentro.com',
+                phone: '+52 55 8888 9999',
+                plan: 'professional',
+                status: 'suspended',
+                modules: ['institucional', 'propiedades'],
+                userLimit: 150,
+                currentUsers: 0,
+                storageLimit: 75,
+                currentStorage: 45,
+                monthlyRevenue: 0,
+                createdAt: '2024-03-10',
+                lastActivity: '2024-10-25 14:20:00',
+                deploymentStatus: 'suspended',
+                isolation: 'warning',
+                notes: 'Suspendido por falta de pago - 5 días'
+            }
+        ];
+
+        // Actividad reciente
+        let recentActivities = [
+            {
+                id: 'activity_001',
+                timestamp: '2024-10-31 20:15:00',
+                tenant: 'Condominio Las Flores',
+                action: 'Usuario conectado',
+                details: 'admin@lasflores.com inició sesión',
+                type: 'login',
+                icon: 'fas fa-sign-in-alt',
+                color: 'text-green-400'
+            },
+            {
+                id: 'activity_002',
+                timestamp: '2024-10-31 19:45:00',
+                tenant: 'Seguridad Total S.A.',
+                action: 'Módulo desplegado',
+                details: 'Módulo de propiedades activado',
+                type: 'deployment',
+                icon: 'fas fa-rocket',
+                color: 'text-blue-400'
+            },
+            {
+                id: 'activity_003',
+                timestamp: '2024-10-31 18:30:00',
+                tenant: 'Residencial Bosques',
+                action: 'Límite alcanzado',
+                details: 'Límite de usuarios al 90%',
+                type: 'warning',
+                icon: 'fas fa-exclamation-triangle',
+                color: 'text-yellow-400'
+            },
+            {
+                id: 'activity_004',
+                timestamp: '2024-10-31 17:20:00',
+                tenant: 'Torres del Centro',
+                action: 'Tenant suspendido',
+                details: 'Suspendido por falta de pago',
+                type: 'suspension',
+                icon: 'fas fa-pause-circle',
+                color: 'text-red-400'
+            }
+        ];
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTenants();
+            loadResourceUsage();
+            loadRecentActivity();
+            updateGlobalStats();
+            startRealTimeUpdates();
+        });
+
+        // Cargar tenants
+        function loadTenants() {
+            const grid = document.getElementById('tenantsGrid');
+            grid.innerHTML = '';
+
+            tenantsData.forEach(tenant => {
+                const tenantCard = createTenantCard(tenant);
+                grid.appendChild(tenantCard);
+            });
+        }
+
+        // Crear tarjeta de tenant
+        function createTenantCard(tenant) {
+            const div = document.createElement('div');
+            div.className = 'glass-effect rounded-xl p-6 tenant-card hover-lift';
+            
+            const statusClass = getTenantStatusClass(tenant.status);
+            const planClass = getPlanClass(tenant.plan);
+            const usagePercentage = (tenant.currentUsers / tenant.userLimit) * 100;
+            const storagePercentage = (tenant.currentStorage / tenant.storageLimit) * 100;
+            
+            div.innerHTML = `
+                <!-- Header de la tarjeta -->
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-white mb-1">${tenant.name}</h3>
+                        <p class="text-blue-300 text-sm">${tenant.subdomain}.condoconnectai.com</p>
+                        <p class="text-gray-400 text-xs">${tenant.email}</p>
+                    </div>
+                    <div class="flex flex-col items-end space-y-2">
+                        <span class="w-3 h-3 rounded-full ${statusClass}"></span>
+                        <span class="isolation-${tenant.isolation}">${tenant.isolation.toUpperCase()}</span>
+                    </div>
+                </div>
+
+                <!-- Plan y estado -->
+                <div class="flex items-center justify-between mb-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${planClass}">
+                        ${tenant.plan.toUpperCase()}
+                    </span>
+                    <span class="text-white font-bold">
+                        ${tenant.monthlyRevenue > 0 ? '$' + tenant.monthlyRevenue : 'TRIAL'}
+                        ${tenant.monthlyRevenue > 0 ? '/mes' : ''}
+                    </span>
+                </div>
+
+                <!-- Módulos -->
+                <div class="mb-4">
+                    <p class="text-gray-400 text-xs mb-2">Módulos activos:</p>
+                    <div class="flex flex-wrap gap-1">
+                        ${tenant.modules.map(module => `
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-700 text-blue-300">
+                                ${module}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Uso de recursos -->
+                <div class="space-y-3 mb-4">
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-1">
+                            <span>Usuarios</span>
+                            <span>${tenant.currentUsers}/${tenant.userLimit}</span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded-full h-2">
+                            <div class="usage-${getUsageLevel(usagePercentage)} h-2 rounded-full" style="width: ${usagePercentage}%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-1">
+                            <span>Almacenamiento</span>
+                            <span>${tenant.currentStorage}/${tenant.storageLimit} GB</span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded-full h-2">
+                            <div class="usage-${getUsageLevel(storagePercentage)} h-2 rounded-full" style="width: ${storagePercentage}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="text-xs text-gray-400 mb-4">
+                    <p>Creado: ${formatDate(tenant.createdAt)}</p>
+                    <p>Última actividad: ${formatDateTime(tenant.lastActivity)}</p>
+                </div>
+
+                <!-- Acciones -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <button onclick="manageTenant('${tenant.id}')" class="text-blue-400 hover:text-blue-300 transition-colors" title="Gestionar">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button onclick="viewTenantDetails('${tenant.id}')" class="text-green-400 hover:text-green-300 transition-colors" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="accessTenant('${tenant.id}')" class="text-purple-400 hover:text-purple-300 transition-colors" title="Acceder">
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        ${tenant.status === 'active' ? `
+                            <button onclick="suspendTenant('${tenant.id}')" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Suspender">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                        ` : tenant.status === 'suspended' ? `
+                            <button onclick="reactivateTenant('${tenant.id}')" class="text-green-400 hover:text-green-300 transition-colors" title="Reactivar">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        ` : ''}
+                        <button onclick="deleteTenant('${tenant.id}')" class="text-red-400 hover:text-red-300 transition-colors" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // Cargar uso de recursos
+        function loadResourceUsage() {
+            const container = document.getElementById('resourceUsageChart');
+            container.innerHTML = '';
+
+            tenantsData.forEach((tenant, index) => {
+                const usageDiv = document.createElement('div');
+                usageDiv.className = 'flex items-center justify-between p-3 bg-gray-800 bg-opacity-50 rounded-lg';
+                
+                const cpuUsage = Math.random() * 100;
+                const memoryUsage = Math.random() * 100;
+                
+                usageDiv.innerHTML = `
+                    <div class="flex-1">
+                        <div class="text-white font-medium text-sm">${tenant.name}</div>
+                        <div class="text-gray-400 text-xs">${tenant.subdomain}</div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-center">
+                            <div class="text-xs text-gray-400">CPU</div>
+                            <div class="text-white font-bold">${Math.round(cpuUsage)}%</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xs text-gray-400">RAM</div>
+                            <div class="text-white font-bold">${Math.round(memoryUsage)}%</div>
+                        </div>
+                        <div class="w-2 h-8 bg-gray-700 rounded-full overflow-hidden">
+                            <div class="usage-${getUsageLevel(cpuUsage)} w-full rounded-full transition-all duration-300" 
+                                 style="height: ${cpuUsage}%"></div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(usageDiv);
+            });
+        }
+
+        // Cargar actividad reciente
+        function loadRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            container.innerHTML = '';
+
+            recentActivities.forEach(activity => {
+                const activityDiv = document.createElement('div');
+                activityDiv.className = 'flex items-start space-x-3 p-3 bg-gray-800 bg-opacity-50 rounded-lg';
+                
+                activityDiv.innerHTML = `
+                    <div class="flex-shrink-0">
+                        <i class="${activity.icon} ${activity.color}"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-white text-sm font-medium">${activity.action}</p>
+                        <p class="text-gray-300 text-xs">${activity.tenant}</p>
+                        <p class="text-gray-400 text-xs">${activity.details}</p>
+                        <p class="text-gray-500 text-xs mt-1">${formatDateTime(activity.timestamp)}</p>
+                    </div>
+                `;
+                
+                container.appendChild(activityDiv);
+            });
+        }
+
+        // Actualizar estadísticas globales
+        function updateGlobalStats() {
+            const activeTenants = tenantsData.filter(t => t.status === 'active').length;
+            const totalUsers = tenantsData.reduce((sum, t) => sum + t.currentUsers, 0);
+            const monthlyRevenue = tenantsData.reduce((sum, t) => sum + t.monthlyRevenue, 0);
+            const avgResourceUsage = Math.round(tenantsData.reduce((sum, t) => 
+                sum + (t.currentUsers / t.userLimit), 0) / tenantsData.length * 100);
+
+            document.getElementById('activeTenantsCount').textContent = activeTenants;
+            document.getElementById('activeTenants').textContent = activeTenants;
+            document.getElementById('totalUsers').textContent = totalUsers.toLocaleString();
+            document.getElementById('monthlyRevenue').textContent = '$' + monthlyRevenue.toLocaleString();
+            document.getElementById('resourceUsage').textContent = avgResourceUsage + '%';
+        }
+
+        // Iniciar actualizaciones en tiempo real
+        function startRealTimeUpdates() {
+            setInterval(() => {
+                // Simular cambios en uso de recursos
+                loadResourceUsage();
+                
+                // Simular nueva actividad ocasional
+                if (Math.random() > 0.8) {
+                    addNewActivity();
+                }
+            }, 30000); // Cada 30 segundos
+        }
+
+        // Mostrar modal de nuevo tenant
+        function showCreateTenantModal() {
+            document.getElementById('createTenantModal').classList.remove('hidden');
+        }
+
+        // Ocultar modal de nuevo tenant
+        function hideCreateTenantModal() {
+            document.getElementById('createTenantModal').classList.add('hidden');
+        }
+
+        // Crear nuevo tenant
+        function createTenant() {
+            const form = document.getElementById('createTenantForm');
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Obtener módulos seleccionados
+            const modules = [];
+            if (document.getElementById('moduleInstitucional').checked) modules.push('institucional');
+            if (document.getElementById('moduleSeguridad').checked) modules.push('seguridad');
+            if (document.getElementById('modulePropiedades').checked) modules.push('propiedades');
+
+            const newTenant = {
+                id: 'tenant_' + Date.now(),
+                name: document.getElementById('tenantName').value,
+                subdomain: document.getElementById('tenantSubdomain').value,
+                email: document.getElementById('tenantEmail').value,
+                phone: document.getElementById('tenantPhone').value,
+                plan: document.querySelector('input[name="tenantPlan"]:checked').value,
+                status: 'active',
+                modules: modules,
+                userLimit: parseInt(document.getElementById('userLimit').value),
+                currentUsers: 0,
+                storageLimit: parseInt(document.getElementById('storageLimit').value),
+                currentStorage: 0,
+                monthlyRevenue: getPlanPrice(document.querySelector('input[name="tenantPlan"]:checked').value),
+                createdAt: new Date().toISOString().split('T')[0],
+                lastActivity: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                deploymentStatus: 'pending',
+                isolation: 'secure',
+                notes: document.getElementById('tenantNotes').value
+            };
+
+            // Simular proceso de despliegue
+            showNotification('Iniciando despliegue del tenant...', 'info');
+            
+            setTimeout(() => {
+                newTenant.deploymentStatus = 'active';
+                tenantsData.push(newTenant);
+                loadTenants();
+                updateGlobalStats();
+                hideCreateTenantModal();
+                showNotification(`Tenant ${newTenant.name} desplegado exitosamente`, 'success');
+                form.reset();
+            }, 3000);
+        }
+
+        // Funciones auxiliares
+        function getTenantStatusClass(status) {
+            const classes = {
+                'active': 'tenant-active',
+                'inactive': 'tenant-inactive',
+                'suspended': 'tenant-suspended',
+                'trial': 'tenant-trial'
+            };
+            return classes[status] || 'tenant-inactive';
+        }
+
+        function getPlanClass(plan) {
+            const classes = {
+                'basic': 'plan-basic',
+                'professional': 'plan-professional',
+                'enterprise': 'plan-enterprise',
+                'custom': 'plan-custom'
+            };
+            return classes[plan] || 'plan-basic';
+        }
+
+        function getUsageLevel(percentage) {
+            if (percentage < 70) return 'low';
+            if (percentage < 90) return 'medium';
+            return 'high';
+        }
+
+        function getPlanPrice(plan) {
+            const prices = {
+                'basic': 299,
+                'professional': 599,
+                'enterprise': 1299,
+                'custom': 0
+            };
+            return prices[plan] || 0;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES');
+        }
+
+        function formatDateTime(dateTimeString) {
+            const date = new Date(dateTimeString);
+            return date.toLocaleString('es-ES');
+        }
+
+        function addNewActivity() {
+            const activities = [
+                'Usuario conectado',
+                'Módulo actualizado',
+                'Backup completado',
+                'Límite de almacenamiento alcanzado',
+                'Nueva funcionalidad desplegada'
+            ];
+            
+            const randomTenant = tenantsData[Math.floor(Math.random() * tenantsData.length)];
+            const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+            
+            const newActivity = {
+                id: 'activity_' + Date.now(),
+                timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                tenant: randomTenant.name,
+                action: randomActivity,
+                details: `Actividad automática en ${randomTenant.subdomain}`,
+                type: 'system',
+                icon: 'fas fa-cog',
+                color: 'text-blue-400'
+            };
+
+            recentActivities.unshift(newActivity);
+            recentActivities = recentActivities.slice(0, 10);
+            loadRecentActivity();
+        }
+
+        // Acciones de tenant
+        function manageTenant(tenantId) {
+            const tenant = tenantsData.find(t => t.id === tenantId);
+            showNotification(`Gestionando tenant: ${tenant.name}`, 'info');
+        }
+
+        function viewTenantDetails(tenantId) {
+            const tenant = tenantsData.find(t => t.id === tenantId);
+            showNotification(`Mostrando detalles de: ${tenant.name}`, 'info');
+        }
+
+        function accessTenant(tenantId) {
+            const tenant = tenantsData.find(t => t.id === tenantId);
+            const url = `https://${tenant.subdomain}.condoconnectai.com`;
+            showNotification(`Accediendo a: ${url}`, 'info');
+            // window.open(url, '_blank');
+        }
+
+        function suspendTenant(tenantId) {
+            if (confirm('¿Está seguro de suspender este tenant?')) {
+                const tenant = tenantsData.find(t => t.id === tenantId);
+                tenant.status = 'suspended';
+                tenant.deploymentStatus = 'suspended';
+                loadTenants();
+                updateGlobalStats();
+                showNotification(`Tenant ${tenant.name} suspendido`, 'warning');
+            }
+        }
+
+        function reactivateTenant(tenantId) {
+            if (confirm('¿Está seguro de reactivar este tenant?')) {
+                const tenant = tenantsData.find(t => t.id === tenantId);
+                tenant.status = 'active';
+                tenant.deploymentStatus = 'active';
+                loadTenants();
+                updateGlobalStats();
+                showNotification(`Tenant ${tenant.name} reactivado`, 'success');
+            }
+        }
+
+        function deleteTenant(tenantId) {
+            if (confirm('¿Está seguro de ELIMINAR este tenant? Esta acción no se puede deshacer.')) {
+                const tenant = tenantsData.find(t => t.id === tenantId);
+                tenantsData = tenantsData.filter(t => t.id !== tenantId);
+                loadTenants();
+                updateGlobalStats();
+                showNotification(`Tenant ${tenant.name} eliminado`, 'error');
+            }
+        }
+
+        function filterTenants() {
+            // Implementar filtrado
+            showNotification('Filtros aplicados', 'info');
+        }
+
+        function showBulkActionsModal() {
+            showNotification('Modal de acciones masivas en desarrollo', 'info');
+        }
+
+        function exportTenants() {
+            showNotification('Exportando datos de tenants...', 'info');
+        }
+
+        function refreshTenants() {
+            loadTenants();
+            loadResourceUsage();
+            loadRecentActivity();
+            updateGlobalStats();
+            showNotification('Datos actualizados', 'info');
+        }
+
+        function showNotification(message, type = 'info') {
+            const toast = document.getElementById('notificationToast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+            
+            const icons = {
+                'success': 'fas fa-check-circle text-green-400',
+                'warning': 'fas fa-exclamation-triangle text-yellow-400',
+                'error': 'fas fa-times-circle text-red-400',
+                'info': 'fas fa-info-circle text-blue-400'
+            };
+            
+            toastIcon.className = icons[type] || icons['info'];
+            toastMessage.textContent = message;
+            
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 5000);
+        }
+
+        function hideNotification() {
+            document.getElementById('notificationToast').classList.add('hidden');
+        }
+
+        // Configuración AWS Amplify (comentado para desarrollo)
+        /*
+        Amplify.configure({
+            Auth: {
+                region: awsConfig.region,
+                userPoolId: awsConfig.userPoolId,
+                userPoolWebClientId: awsConfig.userPoolWebClientId,
+            },
+            API: {
+                endpoints: [
+                    {
+                        name: "condoconnectapi",
+                        endpoint: awsConfig.apiGatewayUrl,
+                        region: awsConfig.region
+                    }
+                ]
+            }
+        });
+        */
+    </script>
+</body>
+</html>

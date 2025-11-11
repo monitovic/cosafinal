@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CondoconnectAI - Módulo Institucional</title>
+    <script src="https://unpkg.com/aws-amplify@latest/dist/aws-amplify.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Efectos Glass Morphism - Consistente con el sistema */
+        .glass-effect {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.8));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59,130,246,0.3);
+            box-shadow: 0 8px 32px rgba(59,130,246,0.1);
+        }
+
+        .metallic-surface {
+            background: linear-gradient(145deg, #0f172a, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a);
+            border: 1px solid rgba(59,130,246,0.4);
+            box-shadow: 0 4px 16px rgba(59,130,246,0.2);
+        }
+
+        .neon-glow {
+            box-shadow: 
+                0 0 5px rgba(59,130,246,0.5),
+                0 0 10px rgba(59,130,246,0.3),
+                0 0 15px rgba(59,130,246,0.2),
+                0 0 20px rgba(59,130,246,0.1);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(59,130,246,0.15);
+        }
+
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15,23,42,0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59,130,246,0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59,130,246,0.7);
+        }
+
+        /* Estados de pagos */
+        .payment-paid {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+
+        .payment-pending {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .payment-overdue {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        /* Estados de mantenimiento */
+        .maintenance-completed {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+
+        .maintenance-pending {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .maintenance-urgent {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        /* Tipos de unidades */
+        .unit-apartment {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .unit-parking {
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .unit-storage {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .unit-commercial {
+            border-left: 4px solid #22c55e;
+        }
+
+        /* Animaciones de notificaciones */
+        .notification-new {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Gráficos personalizados */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            background: rgba(15,23,42,0.8);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        /* Estados de residentes */
+        .resident-active {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+
+        .resident-inactive {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+
+        /* Sidebar navigation */
+        .nav-item {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: rgba(59,130,246,0.1);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .nav-item.active {
+            background: rgba(59,130,246,0.2);
+            border-left: 4px solid #3b82f6;
+        }
+
+        /* Modal backdrop */
+        .modal-backdrop {
+            background: rgba(15,23,42,0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Formularios */
+        .form-input {
+            background: rgba(30,41,59,0.8);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+
+        /* Tablas */
+        .table-row {
+            transition: all 0.3s ease;
+        }
+
+        .table-row:hover {
+            background: rgba(59,130,246,0.05);
+        }
+
+        /* Indicadores de estado */
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-active {
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34,197,94,0.5);
+        }
+
+        .status-inactive {
+            background: #6b7280;
+        }
+
+        .status-warning {
+            background: #f59e0b;
+            box-shadow: 0 0 8px rgba(245,158,11,0.5);
+        }
+
+        .status-error {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239,68,68,0.5);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+    <!-- Header fijo -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo y navegación -->
+                <div class="flex items-center space-x-8">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full border-2 border-blue-500 flex items-center justify-center">
+                            <i class="fas fa-building text-blue-400"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold text-white">CondoconnectAI</h1>
+                            <p class="text-xs text-blue-300">Módulo Institucional</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Navegación principal -->
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="#dashboard" onclick="showSection('dashboard')" class="nav-link text-blue-300 hover:text-white transition-colors">
+                            <i class="fas fa-chart-pie mr-2"></i>Dashboard
+                        </a>
+                        <a href="#residents" onclick="showSection('residents')" class="nav-link text-gray-300 hover:text-white transition-colors">
+                            <i class="fas fa-users mr-2"></i>Residentes
+                        </a>
+                        <a href="#payments" onclick="showSection('payments')" class="nav-link text-gray-300 hover:text-white transition-colors">
+                            <i class="fas fa-credit-card mr-2"></i>Pagos
+                        </a>
+                        <a href="#maintenance" onclick="showSection('maintenance')" class="nav-link text-gray-300 hover:text-white transition-colors">
+                            <i class="fas fa-tools mr-2"></i>Mantenimiento
+                        </a>
+                        <a href="#communications" onclick="showSection('communications')" class="nav-link text-gray-300 hover:text-white transition-colors">
+                            <i class="fas fa-bullhorn mr-2"></i>Comunicados
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Acciones del header -->
+                <div class="flex items-center space-x-4">
+                    <!-- Notificaciones -->
+                    <div class="relative">
+                        <button onclick="toggleNotifications()" class="relative p-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs font-bold notification-new">3</span>
+                        </button>
+                    </div>
+
+                    <!-- Usuario -->
+                    <div class="flex items-center space-x-3">
+                        <div class="text-right">
+                            <p class="text-sm font-medium text-white">Admin Condominio</p>
+                            <p class="text-xs text-blue-300">Residencial Las Flores</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                            <i class="fas fa-user text-white text-sm"></i>
+                        </div>
+                    </div>
+
+                    <!-- Menú móvil -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-gray-300 hover:text-white">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="pt-20 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- SECCIÓN: DASHBOARD -->
+            <div id="dashboard-section" class="section-content">
+                <!-- Estadísticas principales -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Total Unidades -->
+                    <div class="glass-effect rounded-xl p-6 hover-lift">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Total Unidades</p>
+                                <p class="text-3xl font-bold text-white">156</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-home text-blue-400 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400">
+                            <span class="status-indicator status-active"></span>
+                            142 ocupadas, 14 disponibles
+                        </div>
+                    </div>
+
+                    <!-- Pagos del Mes -->
+                    <div class="glass-effect rounded-xl p-6 hover-lift">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Pagos del Mes</p>
+                                <p class="text-3xl font-bold text-white">$847K</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-dollar-sign text-green-400 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400">
+                            <i class="fas fa-arrow-up text-green-400 mr-1"></i>
+                            +12% vs mes anterior
+                        </div>
+                    </div>
+
+                    <!-- Mantenimientos -->
+                    <div class="glass-effect rounded-xl p-6 hover-lift">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Mantenimientos</p>
+                                <p class="text-3xl font-bold text-white">23</p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-wrench text-yellow-400 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400">
+                            <span class="status-indicator status-warning"></span>
+                            5 urgentes, 18 programados
+                        </div>
+                    </div>
+
+                    <!-- Satisfacción -->
+                    <div class="glass-effect rounded-xl p-6 hover-lift">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Satisfacción</p>
+                                <p class="text-3xl font-bold text-white">4.7</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-star text-purple-400 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400">
+                            Promedio de residentes
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos y actividad reciente -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- Gráfico de pagos -->
+                    <div class="glass-effect rounded-xl overflow-hidden">
+                        <div class="p-6 border-b border-blue-500 border-opacity-30">
+                            <h2 class="text-xl font-bold text-white">
+                                <i class="fas fa-chart-line mr-2 text-blue-400"></i>Ingresos Mensuales
+                            </h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="chart-container">
+                                <canvas id="paymentsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actividad reciente -->
+                    <div class="glass-effect rounded-xl overflow-hidden">
+                        <div class="p-6 border-b border-blue-500 border-opacity-30">
+                            <h2 class="text-xl font-bold text-white">
+                                <i class="fas fa-clock mr-2 text-blue-400"></i>Actividad Reciente
+                            </h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4" id="recentActivity">
+                                <div class="flex items-start space-x-3 p-3 bg-gray-800 bg-opacity-50 rounded-lg">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-credit-card text-green-400"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-white text-sm font-medium">Pago recibido</p>
+                                        <p class="text-gray-300 text-xs">Depto 304 - $5,200 MXN</p>
+                                        <p class="text-gray-500 text-xs mt-1">Hace 15 minutos</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-3 bg-gray-800 bg-opacity-50 rounded-lg">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-tools text-yellow-400"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-white text-sm font-medium">Mantenimiento completado</p>
+                                        <p class="text-gray-300 text-xs">Elevador A - Revisión mensual</p>
+                                        <p class="text-gray-500 text-xs mt-1">Hace 1 hora</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-3 bg-gray-800 bg-opacity-50 rounded-lg">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-user-plus text-blue-400"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-white text-sm font-medium">Nuevo residente</p>
+                                        <p class="text-gray-300 text-xs">María González - Depto 507</p>
+                                        <p class="text-gray-500 text-xs mt-1">Hace 3 horas</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones rápidas -->
+                <div class="glass-effect rounded-xl p-6">
+                    <h2 class="text-xl font-bold text-white mb-6">
+                        <i class="fas fa-bolt mr-2 text-blue-400"></i>Acciones Rápidas
+                    </h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button onclick="showAddResidentModal()" class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg neon-glow transition-all duration-300 text-center">
+                            <i class="fas fa-user-plus text-2xl mb-2"></i>
+                            <p class="text-sm font-medium">Nuevo Residente</p>
+                        </button>
+                        <button onclick="showAddPaymentModal()" class="bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg transition-all duration-300 text-center">
+                            <i class="fas fa-plus text-2xl mb-2"></i>
+                            <p class="text-sm font-medium">Registrar Pago</p>
+                        </button>
+                        <button onclick="showMaintenanceModal()" class="bg-yellow-600 hover:bg-yellow-700 text-white p-4 rounded-lg transition-all duration-300 text-center">
+                            <i class="fas fa-wrench text-2xl mb-2"></i>
+                            <p class="text-sm font-medium">Mantenimiento</p>
+                        </button>
+                        <button onclick="showCommunicationModal()" class="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-lg transition-all duration-300 text-center">
+                            <i class="fas fa-bullhorn text-2xl mb-2"></i>
+                            <p class="text-sm font-medium">Comunicado</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: RESIDENTES -->
+            <div id="residents-section" class="section-content hidden">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-bold text-white">
+                        <i class="fas fa-users mr-3 text-blue-400"></i>Gestión de Residentes
+                    </h1>
+                    <button onclick="showAddResidentModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg neon-glow transition-all duration-300">
+                        <i class="fas fa-plus mr-2"></i>Nuevo Residente
+                    </button>
+                </div>
+
+                <!-- Filtros y búsqueda -->
+                <div class="glass-effect rounded-xl p-6 mb-8">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                        <div class="flex items-center space-x-4">
+                            <div class="relative">
+                                <input type="text" id="searchResidents" placeholder="Buscar residente..." 
+                                       class="form-input w-64 pl-10">
+                                <i class="fas fa-search absolute left-3 top-4 text-gray-400"></i>
+                            </div>
+                            <select id="unitTypeFilter" class="form-input">
+                                <option value="">Todos los tipos</option>
+                                <option value="apartment">Departamentos</option>
+                                <option value="parking">Estacionamientos</option>
+                                <option value="storage">Bodegas</option>
+                            </select>
+                            <select id="statusFilter" class="form-input">
+                                <option value="">Todos los estados</option>
+                                <option value="active">Activos</option>
+                                <option value="inactive">Inactivos</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button onclick="exportResidents()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all duration-300">
+                                <i class="fas fa-download mr-2"></i>Exportar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de residentes -->
+                <div class="glass-effect rounded-xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-800 bg-opacity-50">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Residente</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Unidad</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Contacto</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Estado</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Último Pago</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700" id="residentsTable">
+                                <!-- Residentes dinámicos -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: PAGOS -->
+            <div id="payments-section" class="section-content hidden">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-bold text-white">
+                        <i class="fas fa-credit-card mr-3 text-blue-400"></i>Gestión de Pagos
+                    </h1>
+                    <button onclick="showAddPaymentModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg neon-glow transition-all duration-300">
+                        <i class="fas fa-plus mr-2"></i>Registrar Pago
+                    </button>
+                </div>
+
+                <!-- Resumen de pagos -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="glass-effect rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Pagos Recibidos</p>
+                                <p class="text-2xl font-bold text-white">$847,200</p>
+                            </div>
+                            <div class="w-10 h-10 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-check text-green-400"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400">
+                            142 pagos completados
+                        </div>
+                    </div>
+
+                    <div class="glass-effect rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Pagos Pendientes</p>
+                                <p class="text-2xl font-bold text-white">$73,800</p>
+                            </div>
+                            <div class="w-10 h-10 bg-yellow-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock text-yellow-400"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400">
+                            14 pagos pendientes
+                        </div>
+                    </div>
+
+                    <div class="glass-effect rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Pagos Vencidos</p>
+                                <p class="text-2xl font-bold text-white">$15,600</p>
+                            </div>
+                            <div class="w-10 h-10 bg-red-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-red-400"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400">
+                            3 pagos vencidos
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de pagos -->
+                <div class="glass-effect rounded-xl overflow-hidden">
+                    <div class="p-6 border-b border-blue-500 border-opacity-30">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-bold text-white">Historial de Pagos</h2>
+                            <div class="flex items-center space-x-3">
+                                <select class="form-input">
+                                    <option>Todos los meses</option>
+                                    <option>Octubre 2024</option>
+                                    <option>Septiembre 2024</option>
+                                </select>
+                                <button onclick="generatePaymentReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-300">
+                                    <i class="fas fa-file-pdf mr-2"></i>Reporte
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-800 bg-opacity-50">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Fecha</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Residente</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Unidad</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Concepto</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Monto</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Estado</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700" id="paymentsTable">
+                                <!-- Pagos dinámicos -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: MANTENIMIENTO -->
+            <div id="maintenance-section" class="section-content hidden">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-bold text-white">
+                        <i class="fas fa-tools mr-3 text-blue-400"></i>Gestión de Mantenimiento
+                    </h1>
+                    <button onclick="showMaintenanceModal()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg neon-glow transition-all duration-300">
+                        <i class="fas fa-plus mr-2"></i>Nueva Orden
+                    </button>
+                </div>
+
+                <!-- Estados de mantenimiento -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="glass-effect rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Órdenes Abiertas</p>
+                                <p class="text-2xl font-bold text-white">23</p>
+                            </div>
+                            <div class="w-10 h-10 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clipboard-list text-blue-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-effect rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">En Progreso</p>
+                                <p class="text-2xl font-bold text-white">8</p>
+                            </div>
+                            <div class="w-10 h-10 bg-yellow-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-cog text-yellow-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-effect rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Urgentes</p>
+                                <p class="text-2xl font-bold text-white">5</p>
+                            </div>
+                            <div class="w-10 h-10 bg-red-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-red-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-effect rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Completadas</p>
+                                <p class="text-2xl font-bold text-white">156</p>
+                            </div>
+                            <div class="w-10 h-10 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-check text-green-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de mantenimientos -->
+                <div class="glass-effect rounded-xl overflow-hidden">
+                    <div class="p-6 border-b border-blue-500 border-opacity-30">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-bold text-white">Órdenes de Mantenimiento</h2>
+                            <div class="flex items-center space-x-3">
+                                <select class="form-input">
+                                    <option>Todas las prioridades</option>
+                                    <option>Urgente</option>
+                                    <option>Alta</option>
+                                    <option>Media</option>
+                                    <option>Baja</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4" id="maintenanceList">
+                            <!-- Órdenes de mantenimiento dinámicas -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: COMUNICADOS -->
+            <div id="communications-section" class="section-content hidden">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-bold text-white">
+                        <i class="fas fa-bullhorn mr-3 text-blue-400"></i>Comunicados y Avisos
+                    </h1>
+                    <button onclick="showCommunicationModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg neon-glow transition-all duration-300">
+                        <i class="fas fa-plus mr-2"></i>Nuevo Comunicado
+                    </button>
+                </div>
+
+                <!-- Tipos de comunicados -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="glass-effect rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Avisos Generales</p>
+                                <p class="text-2xl font-bold text-white">12</p>
+                            </div>
+                            <div class="w-10 h-10 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-info-circle text-blue-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-effect rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Emergencias</p>
+                                <p class="text-2xl font-bold text-white">2</p>
+                            </div>
+                            <div class="w-10 h-10 bg-red-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-red-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-effect rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-300 text-sm font-medium">Eventos</p>
+                                <p class="text-2xl font-bold text-white">5</p>
+                            </div>
+                            <div class="w-10 h-10 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-calendar text-green-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de comunicados -->
+                <div class="glass-effect rounded-xl overflow-hidden">
+                    <div class="p-6 border-b border-blue-500 border-opacity-30">
+                        <h2 class="text-xl font-bold text-white">Comunicados Recientes</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4" id="communicationsList">
+                            <!-- Comunicados dinámicos -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Nuevo Residente -->
+    <div id="addResidentModal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop fixed inset-0" onclick="hideAddResidentModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="glass-effect rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b border-blue-500 border-opacity-30">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-white">
+                            <i class="fas fa-user-plus mr-2 text-blue-400"></i>Nuevo Residente
+                        </h3>
+                        <button onclick="hideAddResidentModal()" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <form id="addResidentForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Nombre Completo</label>
+                                <input type="text" id="residentName" required class="form-input w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Email</label>
+                                <input type="email" id="residentEmail" required class="form-input w-full">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Teléfono</label>
+                                <input type="tel" id="residentPhone" class="form-input w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Unidad</label>
+                                <select id="residentUnit" required class="form-input w-full">
+                                    <option value="">Seleccionar unidad</option>
+                                    <option value="101">Depto 101</option>
+                                    <option value="102">Depto 102</option>
+                                    <option value="201">Depto 201</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-blue-300 mb-2">Tipo de Unidad</label>
+                            <select id="unitType" required class="form-input w-full">
+                                <option value="">Seleccionar tipo</option>
+                                <option value="apartment">Departamento</option>
+                                <option value="parking">Estacionamiento</option>
+                                <option value="storage">Bodega</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-blue-300 mb-2">Notas Adicionales</label>
+                            <textarea id="residentNotes" rows="3" class="form-input w-full"></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="p-6 border-t border-blue-500 border-opacity-30 flex justify-end space-x-3">
+                    <button onclick="hideAddResidentModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-all duration-300">
+                        Cancelar
+                    </button>
+                    <button onclick="addResident()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg neon-glow transition-all duration-300">
+                        <i class="fas fa-save mr-2"></i>Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de notificaciones -->
+    <div id="notificationToast" class="fixed top-4 right-4 z-50 hidden">
+        <div class="glass-effect rounded-lg p-4 max-w-sm">
+            <div class="flex items-center space-x-3">
+                <i id="toastIcon" class="fas fa-info-circle text-blue-400"></i>
+                <div>
+                    <p class="text-white font-medium">CondoconnectAI</p>
+                    <p id="toastMessage" class="text-blue-300 text-sm"></p>
+                </div>
+                <button onclick="hideNotification()" class="text-gray-400 hover:text-white ml-auto">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración AWS
+        const awsConfig = {
+            region: 'us-east-1',
+            userPoolId: 'us-east-1_XXXXXXXXX',
+            userPoolWebClientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX',
+            apiGatewayUrl: 'https://api.condoconnectai.com'
+        };
+
+        // Datos de ejemplo
+        let residentsData = [
+            {
+                id: 'res_001',
+                name: 'Juan Carlos Pérez',
+                email: 'juan.perez@email.com',
+                phone: '+52 55 1234 5678',
+                unit: '304',
+                unitType: 'apartment',
+                status: 'active',
+                lastPayment: '2024-10-15',
+                notes: 'Propietario principal'
+            },
+            {
+                id: 'res_002',
+                name: 'María González López',
+                email: 'maria.gonzalez@email.com',
+                phone: '+52 55 9876 5432',
+                unit: '507',
+                unitType: 'apartment',
+                status: 'active',
+                lastPayment: '2024-10-20',
+                notes: 'Inquilina'
+            }
+        ];
+
+        let paymentsData = [
+            {
+                id: 'pay_001',
+                date: '2024-10-31',
+                resident: 'Juan Carlos Pérez',
+                unit: '304',
+                concept: 'Mantenimiento Octubre',
+                amount: 5200,
+                status: 'paid',
+                method: 'Transferencia'
+            },
+            {
+                id: 'pay_002',
+                date: '2024-10-30',
+                resident: 'María González López',
+                unit: '507',
+                concept: 'Mantenimiento Octubre',
+                amount: 5200,
+                status: 'pending',
+                method: 'Pendiente'
+            }
+        ];
+
+        let maintenanceData = [
+            {
+                id: 'maint_001',
+                title: 'Revisión Elevador A',
+                description: 'Mantenimiento preventivo mensual',
+                priority: 'medium',
+                status: 'completed',
+                assignedTo: 'Técnico López',
+                createdDate: '2024-10-25',
+                completedDate: '2024-10-30',
+                area: 'Elevadores'
+            },
+            {
+                id: 'maint_002',
+                title: 'Fuga en Cisterna',
+                description: 'Reparación urgente de fuga en cisterna principal',
+                priority: 'urgent',
+                status: 'in-progress',
+                assignedTo: 'Plomero García',
+                createdDate: '2024-10-31',
+                completedDate: null,
+                area: 'Plomería'
+            }
+        ];
+
+        let communicationsData = [
+            {
+                id: 'comm_001',
+                title: 'Corte de Agua Programado',
+                content: 'Se realizará mantenimiento en la cisterna el día 5 de noviembre de 9:00 AM a 2:00 PM',
+                type: 'general',
+                priority: 'high',
+                date: '2024-10-31',
+                author: 'Administración'
+            },
+            {
+                id: 'comm_002',
+                title: 'Reunión de Condóminos',
+                content: 'Reunión mensual el 15 de noviembre a las 7:00 PM en el salón de eventos',
+                type: 'event',
+                priority: 'medium',
+                date: '2024-10-30',
+                author: 'Administración'
+            }
+        ];
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('dashboard');
+            loadResidents();
+            loadPayments();
+            loadMaintenance();
+            loadCommunications();
+            initializeCharts();
+        });
+
+        // Navegación entre secciones
+        function showSection(sectionName) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Mostrar la sección seleccionada
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+
+            // Actualizar navegación
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('text-blue-300');
+                link.classList.add('text-gray-300');
+            });
+
+            // Marcar enlace activo
+            const activeLink = document.querySelector(`[href="#${sectionName}"]`);
+            if (activeLink) {
+                activeLink.classList.remove('text-gray-300');
+                activeLink.classList.add('text-blue-300');
+            }
+        }
+
+        // Cargar residentes
+        function loadResidents() {
+            const tbody = document.getElementById('residentsTable');
+            tbody.innerHTML = '';
+
+            residentsData.forEach(resident => {
+                const row = document.createElement('tr');
+                row.className = 'table-row';
+                
+                const statusClass = resident.status === 'active' ? 'status-active' : 'status-inactive';
+                const unitTypeClass = `unit-${resident.unitType}`;
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-3">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <div class="text-white font-medium">${resident.name}</div>
+                                <div class="text-gray-400 text-sm">${resident.email}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-3 h-8 ${unitTypeClass} mr-2"></div>
+                            <div>
+                                <div class="text-white font-medium">${resident.unit}</div>
+                                <div class="text-gray-400 text-sm capitalize">${resident.unitType}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-white">${resident.phone}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="status-indicator ${statusClass}"></span>
+                        <span class="text-white capitalize">${resident.status}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-white">${formatDate(resident.lastPayment)}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex items-center space-x-2">
+                            <button onclick="editResident('${resident.id}')" class="text-blue-400 hover:text-blue-300">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="viewResident('${resident.id}')" class="text-green-400 hover:text-green-300">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="deleteResident('${resident.id}')" class="text-red-400 hover:text-red-300">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Cargar pagos
+        function loadPayments() {
+            const tbody = document.getElementById('paymentsTable');
+            tbody.innerHTML = '';
+
+            paymentsData.forEach(payment => {
+                const row = document.createElement('tr');
+                row.className = 'table-row';
+                
+                const statusClass = payment.status === 'paid' ? 'payment-paid' : 
+                                  payment.status === 'pending' ? 'payment-pending' : 'payment-overdue';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-white">${formatDate(payment.date)}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-white">${payment.resident}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-white">${payment.unit}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-white">${payment.concept}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-white font-bold">$${payment.amount.toLocaleString()}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
+                            ${payment.status === 'paid' ? 'Pagado' : payment.status === 'pending' ? 'Pendiente' : 'Vencido'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex items-center space-x-2">
+                            <button onclick="viewPayment('${payment.id}')" class="text-blue-400 hover:text-blue-300">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            ${payment.status !== 'paid' ? `
+                                <button onclick="markAsPaid('${payment.id}')" class="text-green-400 hover:text-green-300">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Cargar mantenimiento
+        function loadMaintenance() {
+            const container = document.getElementById('maintenanceList');
+            container.innerHTML = '';
+
+            maintenanceData.forEach(maintenance => {
+                const div = document.createElement('div');
+                div.className = 'glass-effect rounded-lg p-4 hover-lift';
+                
+                const priorityClass = maintenance.priority === 'urgent' ? 'maintenance-urgent' : 
+                                    maintenance.priority === 'high' ? 'maintenance-pending' : 'maintenance-completed';
+                
+                const statusClass = maintenance.status === 'completed' ? 'maintenance-completed' : 
+                                  maintenance.status === 'in-progress' ? 'maintenance-pending' : 'maintenance-urgent';
+                
+                div.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h3 class="text-white font-bold">${maintenance.title}</h3>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${priorityClass}">
+                                    ${maintenance.priority === 'urgent' ? 'Urgente' : 
+                                      maintenance.priority === 'high' ? 'Alta' : 
+                                      maintenance.priority === 'medium' ? 'Media' : 'Baja'}
+                                </span>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusClass}">
+                                    ${maintenance.status === 'completed' ? 'Completado' : 
+                                      maintenance.status === 'in-progress' ? 'En Progreso' : 'Pendiente'}
+                                </span>
+                            </div>
+                            <p class="text-gray-300 text-sm mb-2">${maintenance.description}</p>
+                            <div class="flex items-center space-x-4 text-xs text-gray-400">
+                                <span><i class="fas fa-user mr-1"></i>${maintenance.assignedTo}</span>
+                                <span><i class="fas fa-calendar mr-1"></i>${formatDate(maintenance.createdDate)}</span>
+                                <span><i class="fas fa-map-marker-alt mr-1"></i>${maintenance.area}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="editMaintenance('${maintenance.id}')" class="text-blue-400 hover:text-blue-300">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="viewMaintenance('${maintenance.id}')" class="text-green-400 hover:text-green-300">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        // Cargar comunicados
+        function loadCommunications() {
+            const container = document.getElementById('communicationsList');
+            container.innerHTML = '';
+
+            communicationsData.forEach(comm => {
+                const div = document.createElement('div');
+                div.className = 'glass-effect rounded-lg p-4 hover-lift';
+                
+                const typeIcon = comm.type === 'emergency' ? 'fas fa-exclamation-triangle text-red-400' :
+                               comm.type === 'event' ? 'fas fa-calendar text-green-400' : 'fas fa-info-circle text-blue-400';
+                
+                div.innerHTML = `
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0">
+                            <i class="${typeIcon} text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-white font-bold mb-2">${comm.title}</h3>
+                            <p class="text-gray-300 text-sm mb-3">${comm.content}</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4 text-xs text-gray-400">
+                                    <span><i class="fas fa-user mr-1"></i>${comm.author}</span>
+                                    <span><i class="fas fa-calendar mr-1"></i>${formatDate(comm.date)}</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="editCommunication('${comm.id}')" class="text-blue-400 hover:text-blue-300">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteCommunication('${comm.id}')" class="text-red-400 hover:text-red-300">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        // Inicializar gráficos
+        function initializeCharts() {
+            const ctx = document.getElementById('paymentsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct'],
+                    datasets: [{
+                        label: 'Ingresos',
+                        data: [720, 750, 680, 820, 790, 850, 780, 890, 820, 847],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#9ca3af'
+                            },
+                            grid: {
+                                color: 'rgba(156, 163, 175, 0.1)'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#9ca3af',
+                                callback: function(value) {
+                                    return '$' + value + 'K';
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(156, 163, 175, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Modales
+        function showAddResidentModal() {
+            document.getElementById('addResidentModal').classList.remove('hidden');
+        }
+
+        function hideAddResidentModal() {
+            document.getElementById('addResidentModal').classList.add('hidden');
+        }
+
+        function showAddPaymentModal() {
+            showNotification('Modal de nuevo pago en desarrollo', 'info');
+        }
+
+        function showMaintenanceModal() {
+            showNotification('Modal de mantenimiento en desarrollo', 'info');
+        }
+
+        function showCommunicationModal() {
+            showNotification('Modal de comunic
+        // Agregar residente
+        function addResident() {
+            const form = document.getElementById('addResidentForm');
+            const formData = new FormData(form);
+            
+            const newResident = {
+                id: 'res_' + Date.now(),
+                name: document.getElementById('residentName').value,
+                email: document.getElementById('residentEmail').value,
+                phone: document.getElementById('residentPhone').value,
+                unit: document.getElementById('residentUnit').value,
+                unitType: document.getElementById('unitType').value,
+                status: 'active',
+                lastPayment: new Date().toISOString().split('T')[0],
+                notes: document.getElementById('residentNotes').value
+            };
+
+            residentsData.push(newResident);
+            loadResidents();
+            hideAddResidentModal();
+            showNotification('Residente agregado exitosamente', 'success');
+            
+            // Reset form
+            form.reset();
+        }
+
+        // Funciones de utilidad
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-MX', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN'
+            }).format(amount);
+        }
+
+        // Notificaciones
+        function showNotification(message, type = 'info') {
+            const toast = document.getElementById('notificationToast');
+            const icon = document.getElementById('toastIcon');
+            const messageEl = document.getElementById('toastMessage');
+            
+            messageEl.textContent = message;
+            
+            // Cambiar icono según tipo
+            icon.className = type === 'success' ? 'fas fa-check-circle text-green-400' :
+                           type === 'error' ? 'fas fa-exclamation-circle text-red-400' :
+                           type === 'warning' ? 'fas fa-exclamation-triangle text-yellow-400' :
+                           'fas fa-info-circle text-blue-400';
+            
+            toast.classList.remove('hidden');
+            
+            // Auto-hide después de 3 segundos
+            setTimeout(() => {
+                hideNotification();
+            }, 3000);
+        }
+
+        function hideNotification() {
+            document.getElementById('notificationToast').classList.add('hidden');
+        }
+
+        // Funciones de acciones
+        function editResident(id) {
+            showNotification('Función de editar en desarrollo', 'info');
+        }
+
+        function viewResident(id) {
+            showNotification('Función de ver detalles en desarrollo', 'info');
+        }
+
+        function deleteResident(id) {
+            if (confirm('¿Estás seguro de eliminar este residente?')) {
+                residentsData = residentsData.filter(r => r.id !== id);
+                loadResidents();
+                showNotification('Residente eliminado', 'success');
+            }
+        }
+
+        function markAsPaid(id) {
+            const payment = paymentsData.find(p => p.id === id);
+            if (payment) {
+                payment.status = 'paid';
+                payment.method = 'Manual';
+                loadPayments();
+                showNotification('Pago marcado como pagado', 'success');
+            }
+        }
+
+        function exportResidents() {
+            showNotification('Exportando residentes...', 'info');
+        }
+
+        function generatePaymentReport() {
+            showNotification('Generando reporte de pagos...', 'info');
+        }
+
+        // Menú móvil
+        function toggleMobileMenu() {
+            showNotification('Menú móvil en desarrollo', 'info');
+        }
+
+        function toggleNotifications() {
+            showNotification('Panel de notificaciones en desarrollo', 'info');
+        }
+    </script>
+</body>
+</html>

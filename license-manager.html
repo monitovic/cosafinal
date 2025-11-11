@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CondoconnectAI - Gestor de Licencias</title>
+    <script src="https://unpkg.com/aws-amplify@latest/dist/aws-amplify.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Efectos Glass Morphism - Igual a tus archivos existentes */
+        .glass-effect {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.8));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59,130,246,0.3);
+            box-shadow: 0 8px 32px rgba(59,130,246,0.1);
+        }
+
+        .metallic-surface {
+            background: linear-gradient(145deg, #0f172a, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a);
+            border: 1px solid rgba(59,130,246,0.4);
+            box-shadow: 0 4px 16px rgba(59,130,246,0.2);
+        }
+
+        .neon-glow {
+            box-shadow: 
+                0 0 5px rgba(59,130,246,0.5),
+                0 0 10px rgba(59,130,246,0.3),
+                0 0 15px rgba(59,130,246,0.2),
+                0 0 20px rgba(59,130,246,0.1);
+        }
+
+        /* Animaciones suaves */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(59,130,246,0.15);
+        }
+
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15,23,42,0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59,130,246,0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59,130,246,0.7);
+        }
+
+        /* Status badges personalizados */
+        .status-active {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            box-shadow: 0 2px 8px rgba(34,197,94,0.3);
+        }
+
+        .status-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 2px 8px rgba(245,158,11,0.3);
+        }
+
+        .status-expired {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 2px 8px rgba(239,68,68,0.3);
+        }
+
+        .status-trial {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.3);
+        }
+
+        /* Progress bar personalizado */
+        .progress-custom {
+            background: rgba(15,23,42,0.8);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar-custom {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        /* Modal personalizado */
+        .modal-backdrop {
+            background: rgba(15,23,42,0.8);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+    <!-- Header fijo -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo y título -->
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 rounded-full border-2 border-blue-500 flex items-center justify-center">
+                        <i class="fas fa-key text-blue-400"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">Gestor de Licencias</h1>
+                        <p class="text-sm text-blue-300">Control central CondoconnectAI</p>
+                    </div>
+                </div>
+
+                <!-- Acciones del header -->
+                <div class="flex items-center space-x-3">
+                    <button onclick="showCreateLicenseModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg neon-glow transition-all duration-300 hover-lift">
+                        <i class="fas fa-plus mr-2"></i>Nueva Licencia
+                    </button>
+                    <button onclick="refreshLicenses()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-all duration-300">
+                        <i class="fas fa-sync-alt mr-2"></i>Actualizar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="pt-20 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Estadísticas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Licencias Activas -->
+                <div class="glass-effect rounded-xl p-6 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-300 text-sm font-medium">Licencias Activas</p>
+                            <p class="text-3xl font-bold text-white" id="activeLicenses">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Por Vencer -->
+                <div class="glass-effect rounded-xl p-6 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-300 text-sm font-medium">Por Vencer (30 días)</p>
+                            <p class="text-3xl font-bold text-white" id="expiringLicenses">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-yellow-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-yellow-400 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vencidas -->
+                <div class="glass-effect rounded-xl p-6 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-300 text-sm font-medium">Vencidas</p>
+                            <p class="text-3xl font-bold text-white" id="expiredLicenses">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-red-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-times-circle text-red-400 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ingresos -->
+                <div class="glass-effect rounded-xl p-6 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-300 text-sm font-medium">Ingresos Mensuales</p>
+                            <p class="text-3xl font-bold text-white" id="totalRevenue">$0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-dollar-sign text-blue-400 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de licencias -->
+            <div class="glass-effect rounded-xl overflow-hidden">
+                <!-- Header de la tabla -->
+                <div class="p-6 border-b border-blue-500 border-opacity-30">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-bold text-white">
+                            <i class="fas fa-list mr-2 text-blue-400"></i>Licencias Activas
+                        </h2>
+                        <div class="flex items-center space-x-3">
+                            <div class="relative">
+                                <input type="text" id="searchInput" placeholder="Buscar cliente..." 
+                                       class="bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <button onclick="searchLicenses()" class="absolute right-2 top-2 text-blue-400 hover:text-blue-300">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenido de la tabla -->
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="metallic-surface">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-blue-300">Cliente</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-blue-300">Tipo de Licencia</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-blue-300">Módulos</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-blue-300">Usuarios</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-blue-300">Vencimiento</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-blue-300">Estado</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-blue-300">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="licensesTableBody" class="divide-y divide-gray-700">
+                            <!-- Datos dinámicos -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Nueva Licencia -->
+    <div id="createLicenseModal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop fixed inset-0" onclick="hideCreateLicenseModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="glass-effect rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <!-- Header del modal -->
+                <div class="p-6 border-b border-blue-500 border-opacity-30">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-white">
+                            <i class="fas fa-plus-circle mr-2 text-blue-400"></i>Nueva Licencia
+                        </h3>
+                        <button onclick="hideCreateLicenseModal()" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contenido del modal -->
+                <div class="p-6">
+                    <form id="createLicenseForm" class="space-y-6">
+                        <!-- Información del cliente -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Nombre del Cliente</label>
+                                <input type="text" id="clientName" required
+                                       class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Email de Contacto</label>
+                                <input type="email" id="clientEmail" required
+                                       class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                        </div>
+
+                        <!-- Configuración de licencia -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Tipo de Licencia</label>
+                                <select id="licenseType" onchange="updateModulesAndPricing()"
+                                        class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="basic">Básica - $299/mes</option>
+                                    <option value="professional">Profesional - $599/mes</option>
+                                    <option value="enterprise">Empresarial - $1299/mes</option>
+                                    <option value="custom">Personalizada</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Máximo de Usuarios</label>
+                                <input type="number" id="maxUsers" min="1" value="50"
+                                       class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                        </div>
+
+                        <!-- Módulos -->
+                        <div>
+                            <label class="block text-sm font-medium text-blue-300 mb-3">Módulos Incluidos</label>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="modulesCheckboxes">
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="checkbox" id="moduleInstitucional" value="institucional" checked
+                                           class="w-5 h-5 text-blue-600 bg-gray-800 border-blue-500 rounded focus:ring-blue-500">
+                                    <span class="text-white">Institucional</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="checkbox" id="moduleSeguridad" value="seguridad"
+                                           class="w-5 h-5 text-blue-600 bg-gray-800 border-blue-500 rounded focus:ring-blue-500">
+                                    <span class="text-white">Empresa Seguridad</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="checkbox" id="modulePropiedades" value="propiedades"
+                                           class="w-5 h-5 text-blue-600 bg-gray-800 border-blue-500 rounded focus:ring-blue-500">
+                                    <span class="text-white">Propiedades</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Fechas -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Fecha de Inicio</label>
+                                <input type="date" id="startDate" required
+                                       class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-blue-300 mb-2">Duración (meses)</label>
+                                <select id="duration"
+                                        class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="1">1 mes</option>
+                                    <option value="3">3 meses</option>
+                                    <option value="6">6 meses</option>
+                                    <option value="12" selected>12 meses</option>
+                                    <option value="24">24 meses</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Notas -->
+                        <div>
+                            <label class="block text-sm font-medium text-blue-300 mb-2">Notas Adicionales</label>
+                            <textarea id="notes" rows="3"
+                                      class="w-full bg-gray-800 border border-blue-500 border-opacity-30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Footer del modal -->
+                <div class="p-6 border-t border-blue-500 border-opacity-30 flex justify-end space-x-3">
+                    <button onclick="hideCreateLicenseModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-all duration-300">
+                        Cancelar
+                    </button>
+                    <button onclick="createLicense()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg neon-glow transition-all duration-300">
+                        <i class="fas fa-save mr-2"></i>Crear Licencia
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de notificaciones -->
+    <div id="notificationToast" class="fixed top-4 right-4 z-50 hidden">
+        <div class="glass-effect rounded-lg p-4 max-w-sm">
+            <div class="flex items-center space-x-3">
+                <i id="toastIcon" class="fas fa-info-circle text-blue-400"></i>
+                <div>
+                    <p class="text-white font-medium">CondoconnectAI</p>
+                    <p id="toastMessage" class="text-blue-300 text-sm"></p>
+                </div>
+                <button onclick="hideNotification()" class="text-gray-400 hover:text-white ml-auto">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración AWS - Igual a tus archivos existentes
+        const awsConfig = {
+            region: 'us-east-1',
+            userPoolId: 'us-east-1_XXXXXXXXX',
+            userPoolWebClientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX',
+            apiGatewayUrl: 'https://api.condoconnectai.com'
+        };
+
+        // Datos de ejemplo con el mismo formato que tus archivos
+        let licensesData = [
+            {
+                id: 'lic_001',
+                clientName: 'Condominio Las Flores',
+                clientEmail: 'admin@lasflores.com',
+                licenseType: 'professional',
+                modules: ['institucional', 'propiedades'],
+                maxUsers: 100,
+                currentUsers: 45,
+                startDate: '2024-01-15',
+                endDate: '2025-01-15',
+                status: 'active',
+                monthlyPrice: 599,
+                notes: 'Cliente premium con soporte 24/7'
+            },
+            {
+                id: 'lic_002',
+                clientName: 'Seguridad Total S.A.',
+                clientEmail: 'contacto@seguridadtotal.com',
+                licenseType: 'enterprise',
+                modules: ['institucional', 'seguridad', 'propiedades'],
+                maxUsers: 500,
+                currentUsers: 234,
+                startDate: '2024-02-01',
+                endDate: '2025-02-01',
+                status: 'active',
+                monthlyPrice: 1299,
+                notes: 'Empresa de seguridad con múltiples contratos'
+            },
+            {
+                id: 'lic_003',
+                clientName: 'Edificio Corporativo Centro',
+                clientEmail: 'admin@edificiocentro.com',
+                licenseType: 'basic',
+                modules: ['institucional'],
+                maxUsers: 25,
+                currentUsers: 18,
+                startDate: '2024-03-01',
+                endDate: '2024-12-01',
+                status: 'warning',
+                monthlyPrice: 299,
+                notes: 'Vence en 30 días - renovación pendiente'
+            }
+        ];
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLicenses();
+            updateStats();
+            setTodayDate();
+        });
+
+        // Cargar licencias en la tabla
+        function loadLicenses() {
+            const tbody = document.getElementById('licensesTableBody');
+            tbody.innerHTML = '';
+
+            licensesData.forEach(license => {
+                const row = createLicenseRow(license);
+                tbody.appendChild(row);
+            });
+        }
+
+        // Crear fila de licencia con el estilo de tus archivos
+        function createLicenseRow(license) {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-800 hover:bg-opacity-50 transition-all duration-300';
+            
+            const statusClass = getStatusClass(license.status);
+            const statusText = getStatusText(license.status);
+            const daysToExpire = getDaysToExpire(license.endDate);
+            const usagePercentage = (license.currentUsers / license.maxUsers) * 100;
+            
+            row.innerHTML = `
+                <td class="px-6 py-4">
+                    <div>
+                        <div class="text-white font-medium">${license.clientName}</div>
+                        <div class="text-blue-300 text-sm">${license.clientEmail}</div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500 bg-opacity-20 text-blue-300 border border-blue-500 border-opacity-30">
+                        ${license.licenseType.toUpperCase()}
+                    </span>
+                    <div class="text-green-400 text-sm mt-1">$${license.monthlyPrice}/mes</div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex flex-wrap gap-1">
+                        ${license.modules.map(module => 
+                            `<span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-700 text-blue-300">${module}</span>`
+                        ).join('')}
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-white text-sm">${license.currentUsers}/${license.maxUsers}</span>
+                        <div class="flex-1 progress-custom">
+                            <div class="progress-bar-custom" style="width: ${usagePercentage}%"></div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="text-white">${formatDate(license.endDate)}</div>
+                    <div class="text-blue-300 text-sm">${daysToExpire} días</div>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusClass}">
+                        ${statusText}
+                    </span>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center space-x-2">
+                        <button onclick="editLicense('${license.id}')" class="text-blue-400 hover:text-blue-300 transition-colors" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="renewLicense('${license.id}')" class="text-green-400 hover:text-green-300 transition-colors" title="Renovar">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button onclick="suspendLicense('${license.id}')" class="text-red-400 hover:text-red-300 transition-colors" title="Suspender">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            
+            return row;
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const active = licensesData.filter(l => l.status === 'active').length;
+            const expiring = licensesData.filter(l => getDaysToExpire(l.endDate) <= 30 && l.status === 'active').length;
+            const expired = licensesData.filter(l => l.status === 'expired').length;
+            const revenue = licensesData.filter(l => l.status === 'active').reduce((sum, l) => sum + l.monthlyPrice, 0);
+
+            document.getElementById('activeLicenses').textContent = active;
+            document.getElementById('expiringLicenses').textContent = expiring;
+            document.getElementById('expiredLicenses').textContent = expired;
+            document.getElementById('totalRevenue').textContent = `$${revenue.toLocaleString()}`;
+        }
+
+        // Mostrar modal
+        function showCreateLicenseModal() {
+            document.getElementById('createLicenseModal').classList.remove('hidden');
+        }
+
+        // Ocultar modal
+        function hideCreateLicenseModal() {
+            document.getElementById('createLicenseModal').classList.add('hidden');
+        }
+
+        // Crear nueva licencia
+        function createLicense() {
+            const form = document.getElementById('createLicenseForm');
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const modules = [];
+            document.querySelectorAll('#modulesCheckboxes input[type="checkbox"]:checked').forEach(checkbox => {
+                modules.push(checkbox.value);
+            });
+
+            const newLicense = {
+                id: 'lic_' + Date.now(),
+                clientName: document.getElementById('clientName').value,
+                clientEmail: document.getElementById('clientEmail').value,
+                licenseType: document.getElementById('licenseType').value,
+                modules: modules,
+                maxUsers: parseInt(document.getElementById('maxUsers').value),
+                currentUsers: 0,
+                startDate: document.getElementById('startDate').value,
+                endDate: calculateEndDate(document.getElementById('startDate').value, parseInt(document.getElementById('duration').value)),
+                status: 'active',
+                monthlyPrice: getLicensePrice(document.getElementById('licenseType').value),
+                notes: document.getElementById('notes').value
+            };
+
+            licensesData.push(newLicense);
+            loadLicenses();
+            updateStats();
+            hideCreateLicenseModal();
+            showNotification('Licencia creada exitosamente', 'success');
+            form.reset();
+        }
+
+        // Funciones auxiliares - Manteniendo tu estilo
+        function getStatusClass(status) {
+            const classes = {
+                'active': 'status-active',
+                'warning': 'status-warning',
+                'expired': 'status-expired',
+                'trial': 'status-trial'
+            };
+            return classes[status] || 'status-active';
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'active': 'Activa',
+                'warning': 'Por Vencer',
+                'expired': 'Vencida',
+                'trial': 'Prueba'
+            };
+            return texts[status] || 'Activa';
+        }
+
+        function getDaysToExpire(endDate) {
+            const today = new Date();
+            const expireDate = new Date(endDate);
+            const diffTime = expireDate - today;
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES');
+        }
+
+        function calculateEndDate(startDate, months) {
+            const date = new Date(startDate);
+            date.setMonth(date.getMonth() + months);
+            return date.toISOString().split('T')[0];
+        }
+
+        function getLicensePrice(type) {
+            const prices = {
+                'basic': 299,
+                'professional': 599,
+                'enterprise': 1299,
+                'custom': 0
+            };
+            return prices[type] || 0;
+        }
+
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+        }
+
+        function updateModulesAndPricing() {
+            const licenseType = document.getElementById('licenseType').value;
+            
+            const moduleCheckboxes = {
+                'basic': ['institucional'],
+                'professional': ['institucional', 'propiedades'],
+                'enterprise': ['institucional', 'seguridad', 'propiedades'],
+                'custom': []
+            };
+
+            document.querySelectorAll('#modulesCheckboxes input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = moduleCheckboxes[licenseType].includes(checkbox.value);
+            });
+        }
+
+        function refreshLicenses() {
+            loadLicenses();
+            updateStats();
+            showNotification('Licencias actualizadas', 'info');
+        }
+
+        function searchLicenses() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredData = licensesData.filter(license => 
+                license.clientName.toLowerCase().includes(searchTerm) ||
+                license.clientEmail.toLowerCase().includes(searchTerm)
+            );
+            
+            const tbody = document.getElementById('licensesTableBody');
+            tbody.innerHTML = '';
+            
+            filteredData.forEach(license => {
+                const row = createLicenseRow(license);
+                tbody.appendChild(row);
+            });
+        }
+
+        function editLicense(licenseId) {
+            showNotification('Función de edición en desarrollo', 'info');
+        }
+
+        function renewLicense(licenseId) {
+            showNotification('Función de renovación en desarrollo', 'info');
+        }
+
+        function suspendLicense(licenseId) {
+            if (confirm('¿Está seguro de suspender esta licencia?')) {
+                showNotification('Licencia suspendida', 'warning');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const toast = document.getElementById('notificationToast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+            
+            const icons = {
+                'success': 'fas fa-check-circle text-green-400',
+                'warning': 'fas fa-exclamation-triangle text-yellow-400',
+                'error': 'fas fa-times-circle text-red-400',
+                'info': 'fas fa-info-circle text-blue-400'
+            };
+            
+            toastIcon.className = icons[type] || icons['info'];
+            toastMessage.textContent = message;
+            
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 5000);
+        }
+
+        function hideNotification() {
+            document.getElementById('notificationToast').classList.add('hidden');
+        }
+
+        // Configuración AWS Amplify (comentado para desarrollo - igual que tus archivos)
+        /*
+        Amplify.configure({
+            Auth: {
+                region: awsConfig.region,
+                userPoolId: awsConfig.userPoolId,
+                userPoolWebClientId: awsConfig.userPoolWebClientId,
+            },
+            API: {
+                endpoints: [
+                    {
+                        name: "condoconnectapi",
+                        endpoint: awsConfig.apiGatewayUrl,
+                        region: awsConfig.region
+                    }
+                ]
+            }
+        });
+        */
+    </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuración de Propiedad - CondoConnect AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body { 
+      box-sizing: border-box; 
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #e2e8f0;
+    }
+    .container-custom {
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 1.5rem;
+    }
+    .glass-effect { 
+      background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.8)); 
+      backdrop-filter: blur(20px); 
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(59,130,246,0.3); 
+      box-shadow: 0 8px 32px rgba(59,130,246,0.1); 
+    }
+    .metallic-surface { 
+      background: linear-gradient(145deg, #0f172a, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a); 
+      border: 1px solid #334155;
+    }
+    .neon-glow { 
+      box-shadow: 0 0 5px rgba(59,130,246,0.5), 0 0 10px rgba(59,130,246,0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-custom space-y-8">
+    <h1 class="text-3xl font-extrabold text-blue-400">⚙️ Configuración de Propiedad</h1>
+    <p class="text-blue-300">Ajuste de módulos, roles y esquemas de operación para **Torre Altavista**.</p>
+
+    <form id="configForm" class="space-y-6">
+      <input type="hidden" id="propertyId" value="altavista-001">
+
+      <!-- Configuración General -->
+      <div class="glass-effect rounded-xl p-6 space-y-4">
+        <h2 class="text-xl font-bold text-blue-200 border-b pb-2 border-blue-500/30">Datos Generales</h2>
+        <!-- Tipo de Propiedad (Clave para Nómina) -->
+        <div>
+          <label for="propertyType" class="block text-sm font-medium mb-1">Tipo de Propiedad (Afecta Esquema Nómina)</label>
+          <select id="propertyType" name="propertyType" class="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+            <option value="residencial-vertical">Residencial (Vertical)</option>
+            <option value="residencial-horizontal">Residencial (Horizontal)</option>
+            <option value="comercial">Comercial / Oficinas</option>
+            <option value="industrial">Parque Industrial</option>
+            <option value="mixto">Mixto</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Módulos Adicionales (Con Nómina y Mtto.) -->
+      <div class="glass-effect rounded-xl p-6 space-y-4">
+        <h2 class="text-xl font-bold text-blue-200 border-b pb-2 border-blue-500/30">Módulos Activos</h2>
+        
+        <div class="flex items-center p-3 bg-gray-800/50 rounded-lg">
+          <input type="checkbox" id="module-acceso" name="modules" value="control-acceso" class="h-4 w-4 text-blue-600 rounded">
+          <label for="module-acceso" class="ml-3 text-sm font-medium">Control de Acceso (Facial, RFID, QR)</label>
+        </div>
+        
+        <div class="flex items-center p-3 bg-gray-800/50 rounded-lg border-l-4 border-orange-500">
+          <input type="checkbox" id="module-nomina" name="modules" value="payroll" class="h-4 w-4 text-orange-600 rounded" checked>
+          <label for="module-nomina" class="ml-3 text-sm font-medium">Módulo de Nómina y RRHH con IA</label>
+        </div>
+
+        <div class="flex items-center p-3 bg-gray-800/50 rounded-lg border-l-4 border-green-500">
+            <input type="checkbox" id="module-mtto" name="modules" value="maintenance-tickets" class="h-4 w-4 text-green-600 rounded" checked>
+            <label for="module-mtto" class="ml-3 text-sm font-medium">Gestión de Tickets de Mantenimiento</label>
+        </div>
+        
+        <div class="flex items-center p-3 bg-gray-800/50 rounded-lg">
+          <input type="checkbox" id="module-cctv" name="modules" value="cctv-ia" class="h-4 w-4 text-blue-600 rounded">
+          <label for="module-cctv" class="ml-3 text-sm font-medium">Monitoreo CCTV con IA</label>
+        </div>
+      </div>
+      
+      <!-- Configuración de Nómina y ERP (Nuevo) -->
+      <div class="glass-effect rounded-xl p-6 space-y-4">
+        <h2 class="text-xl font-bold text-orange-400 border-b pb-2 border-orange-500/30">Configuración Nómina y ERP</h2>
+        
+        <!-- Esquema Nómina (Basado en Tipo de Propiedad) -->
+        <div>
+            <label for="nominaSchema" class="block text-sm font-medium mb-1">Esquema de Nómina Predeterminado (AWS Lambda)</label>
+            <select id="nominaSchema" name="nominaSchema" class="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-orange-500 focus:border-orange-500 transition">
+              <option value="24x24-seguridad">Esquema Seguridad 24x24</option>
+              <option value="12x12-seguridad">Esquema Seguridad 12x12</option>
+              <option value="mtto-base">Esquema Mantenimiento Base</option>
+            </select>
+        </div>
+        
+        <!-- Conexión ERP -->
+        <div>
+            <label for="erpKey" class="block text-sm font-medium mb-1">Clave API de Integración ERP (AWS Secrets Manager)</label>
+            <input type="text" id="erpKey" name="erpKey" value="********-ERP-SAP-999" class="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-orange-500 focus:border-orange-500 transition">
+            <p class="text-xs text-blue-300 mt-1">Conexión con ContPAQi/SAP vía API Gateway para envío de cálculos.</p>
+        </div>
+
+        <!-- Rol Mantenimiento -->
+        <div>
+            <label for="mttoRole" class="block text-sm font-medium mb-1">Grupo de Rol para Personal de Mantenimiento (AWS Cognito)</label>
+            <input type="text" id="mttoRole" name="mttoRole" value="MTTO_STAFF_GROUP" class="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-orange-500 focus:border-orange-500 transition">
+            <p class="text-xs text-green-300 mt-1">Este grupo de empleados solo verá tickets en su App Móvil.</p>
+        </div>
+
+      </div>
+
+      <!-- Flujo de Tickets de Mantenimiento (Nuevo) -->
+      <div class="glass-effect rounded-xl p-6 space-y-4">
+        <h2 class="text-xl font-bold text-green-400 border-b pb-2 border-green-500/30">Flujo de Tickets de Mantenimiento</h2>
+        
+        <div>
+          <label for="ticketAuthFlow" class="block text-sm font-medium mb-1">Flujo de Autorización</label>
+          <select id="ticketAuthFlow" name="ticketAuthFlow" class="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500 transition">
+            <option value="admin-approval">1. Residente -> 2. Admin (Aprueba) -> 3. Mtto.</option>
+            <option value="auto-assign">1. Residente -> 2. Asignación Automática (IA) -> 3. Mtto.</option>
+            <option value="supervisor-review">1. Residente -> 2. Supervisor -> 3. Mtto.</option>
+          </select>
+          <p class="text-xs text-blue-300 mt-1">Define si el Administrador debe evaluar y autorizar el ticket antes de que Mtto. lo reciba.</p>
+        </div>
+
+        <div>
+            <label for="mttoSLA" class="block text-sm font-medium mb-1">SLA de Respuesta Mtto. (Horas)</label>
+            <input type="number" id="mttoSLA" name="mttoSLA" value="24" class="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500 transition">
+            <p class="text-xs text-blue-300 mt-1">Tiempo máximo para la atención inicial del ticket. (Monitoreado con AWS CloudWatch).</p>
+          </div>
+      </div>
+
+
+      <!-- Botones de Acción -->
+      <div class="flex justify-end space-x-4 pt-4">
+        <button type="button" onclick="window.location.reload()" class="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition">
+          <i class="fas fa-undo-alt"></i> Cancelar
+        </button>
+        <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold neon-glow">
+          <i class="fas fa-sync-alt"></i> Guardar Configuración
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('configForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const configData = { propertyId: document.getElementById('propertyId').value };
+      formData.forEach((value, key) => {
+        if (key === 'modules') {
+          if (!configData[key]) configData[key] = [];
+          configData[key].push(value);
+        } else {
+          configData[key] = value;
+        }
+      });
+
+      try {
+        // En un entorno real, esta función se comunicaría con una API Gateway
+        // que dispararía una AWS Lambda para guardar en DynamoDB.
+        console.log('Datos de configuración a guardar (Simulado):', configData);
+        
+        // Simulación de llamada a API
+        /*
+        const response = await fetch('https://api.condoconnect.ai/prod/properties/config', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('idToken')}`
+          },
+          body: JSON.stringify(configData)
+        });
+
+        if (response.ok) {
+          // Usar modal o mensaje de toast en lugar de alert
+          showSuccessMessage('✅ Configuración actualizada exitosamente.');
+        } else {
+          const error = await response.json();
+          throw new Error(error.message || 'Error desconocido al actualizar.');
+        }
+        */
+        
+        // Mensaje simulado de éxito
+        console.log('✅ Configuración de Nómina y Tickets actualizada exitosamente.');
+        alert('✅ Configuración de Nómina y Tickets actualizada exitosamente.');
+
+
+      } catch (err) {
+        console.error("Error al guardar la configuración:", err);
+        alert(`❌ Error al guardar la configuración: ${err.message}`);
+      }
+    });
+
+    // Función de ejemplo para usar en lugar de alert
+    function showSuccessMessage(message) {
+      console.log(message); // En una app real, mostraría un toast o modal
+    }
+    
+    // Simular que los módulos de Nómina y Mtto. están activos por defecto para el ejemplo
+    document.getElementById('module-nomina').checked = true;
+    document.getElementById('module-mtto').checked = true;
+
+  </script>
+</body>
+</html>
+

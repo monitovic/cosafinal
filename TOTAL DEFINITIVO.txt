@@ -1,0 +1,17 @@
+CÓDIGO FUENTE: 312 archivos (55.2%)
+- Java/Swift/JavaScript/PHP/Python/Solidity
+
+CONFIGURACIÓN: 89 archivos (15.8%)
+- JSON/YAML/XML/Properties
+
+DOCUMENTACIÓN: 78 archivos (13.8%)
+- MD/PDF/HTML
+
+MULTIMEDIA: 45 archivos (8.0%)
+- Imágenes/Videos/Screenshots
+
+DATOS/ESQUEMAS: 25 archivos (4.4%)
+- SQL/Migrations/Seeds
+
+SCRIPTS: 16 archivos (2.8%)
+- Shell/Batch/Deploy

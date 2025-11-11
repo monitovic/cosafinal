@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alta de Residente (AWS Rekognition) – CondoConnect AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1093.0.min.js"></script>
+  <style>
+    body { box-sizing: border-box; margin: 0; padding: 0; background: #0f172a; }
+    .glass-effect { background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.8)); backdrop-filter: blur(20px); border: 1px solid rgba(59,130,246,0.3); }
+    .metallic-surface { background: linear-gradient(145deg, #0f172a, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a); border: 1px solid rgba(59,130,246,0.4); }
+    .neon-glow { box-shadow: 0 0 5px rgba(59,130,246,0.5), 0 0 10px rgba(59,130,246,0.3); }
+    video { width: 100%; height: 240px; background: #000; border-radius: 0.5rem; object-fit: cover; }
+    canvas { display: none; } /* El canvas es solo para procesar */
+  </style>
+</head>
+<body class="text-white">
+  <!-- Sidebar -->
+  <div class="fixed left-0 top-0 h-full w-72 metallic-surface z-50 p-6">
+    <!-- (Contenido del Sidebar omitido por brevedad, igual al de panel-propiedad.html) -->
+    <nav class="mt-6 space-y-2">
+      <a href="panel-propiedad.html" class="flex items-center space-x-3 p-3 rounded-lg text-slate-300 hover:bg-blue-500/20">
+        <i class="fas fa-arrow-left w-5 text-center"></i><span>Volver al Panel</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 p-3 rounded-lg bg-blue-500/30 text-white font-semibold">
+        <i class="fas fa-user-plus w-5 text-center"></i><span>Alta de Residente</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Contenido Principal -->
+  <div id="main-content" class="ml-72 p-6 md:p-10">
+    <header class="metallic-surface rounded-xl p-4 mb-6">
+      <h1 class="text-2xl md:text-3xl font-bold text-white">Alta Biométrica de Residente (AWS)</h1>
+      <p class="text-blue-300">Registro seguro con AWS Rekognition, S3 y DynamoDB.</p>
+    </header>
+
+    <form id="residentForm" class="glass-effect rounded-xl p-6 max-w-4xl mx-auto">
+      <!-- Datos personales -->
+      <fieldset class="mb-8 p-4 border border-blue-500/20 rounded-lg">
+        <legend class="text-xl font-bold text-blue-200 mb-4">👤 Datos Personales</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="text" id="fullName" placeholder="Nombre completo *" required class="p-3 rounded bg-gray-800 text-white border border-blue-500/30 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input type="email" id="email" placeholder="Correo electrónico *" required class="p-3 rounded bg-gray-800 text-white border border-blue-500/30 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input type="tel" id="phone" placeholder="Teléfono" class="p-3 rounded bg-gray-800 text-white border border-blue-500/30 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input type="text" id="unit" placeholder="Unidad habitacional (Ej. Torre A - 101) *" required class="p-3 rounded bg-gray-800 text-white border border-blue-500/30 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </fieldset>
+
+      <!-- Captura facial (AWS Rekognition) -->
+      <fieldset class="mb-8 p-4 border border-blue-500/20 rounded-lg">
+        <legend class="text-xl font-bold text-blue-200 mb-4">📸 Captura Facial (Rekognition)</legend>
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+        <button type="button" id="captureBtn" class="w-full py-3 mt-4 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold neon-glow flex items-center justify-center space-x-2">
+          <i class="fas fa-camera"></i>
+          <span>Activar Cámara y Capturar Rostro</span>
+        </button>
+        <p class="text-sm text-blue-300 mt-2">Asegúrate de estar en un lugar bien iluminado.</p>
+        <input type="hidden" id="faceEmbeddingId" /> <!-- Aquí se guardará el FaceId de Rekognition -->
+        <input type="hidden" id="s3ImagePath" /> <!-- Ruta de la imagen en S3 -->
+      </fieldset>
+
+      <!-- Documentos (AWS S3) -->
+      <fieldset class="mb-8 p-4 border border-blue-500/20 rounded-lg">
+        <legend class="text-xl font-bold text-blue-200 mb-4">📄 Documentos (AWS S3)</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Identificación oficial (INE/Pasaporte)</label>
+            <input type="file" id="idDocument" accept="image/*,.pdf" required class="w-full text-sm text-blue-300 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Comprobante de domicilio</label>
+            <input type="file" id="proofOfAddress" accept="image/*,.pdf" class="w-full text-sm text-blue-300 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700" />
+          </div>
+        </div>
+      </fieldset>
+      
+      <!-- Botones -->
+      <div class="flex justify-end space-x-4">
+        <button type="reset" class="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold">Cancelar</button>
+        <button type="submit" class="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg font-semibold neon-glow">
+          <i class="fas fa-save"></i> Registrar Residente en AWS
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // --- Configuración de AWS SDK (Cognito, S3, Rekognition, DynamoDB) ---
+    // (Requiere credenciales de Cognito para autenticar las solicitudes)
+    // AWS.config.update({...});
+    // const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+    // const rekognition = new AWS.Rekognition({ apiVersion: '2016-06-27' });
+    // const dynamoDB = new AWS.DynamoDB.DocumentClient();
+
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureBtn = document.getElementById('captureBtn');
+    let stream;
+
+    // 1. Activar Cámara
+    captureBtn.addEventListener('click', async () => {
+      if (!stream) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          video.srcObject = stream;
+          captureBtn.innerHTML = '<i class="fas fa-camera-retro"></i><span>Capturar Foto</span>';
+          captureBtn.classList.replace('bg-blue-600', 'bg-red-600');
+        } catch (err) {
+          console.error("Error al acceder a la cámara:", err);
+          alert("No se pudo acceder a la cámara.");
+        }
+      } else {
+        // 2. Tomar la foto y procesar con AWS
+        procesarCapturaFacial();
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+        captureBtn.innerHTML = '<i class="fas fa-check-circle"></i><span>Rostro Capturado</span>';
+        captureBtn.classList.replace('bg-red-600', 'bg-green-600');
+        captureBtn.disabled = true;
+      }
+    });
+
+    async function procesarCapturaFacial() {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Convertir canvas a Blob (archivo de imagen)
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], 'face.jpg', { type: 'image/jpeg' });
+        
+        try {
+          alert("Simulando: 1. Subiendo foto a S3... 2. Indexando en Rekognition...");
+
+          // --- 1. Subir imagen a AWS S3 (Simulado) ---
+          // const s3Params = {
+          //   Bucket: 'condoconnect-faces-bucket',
+          //   Key: `index/${Date.now()}_${file.name}`,
+          //   Body: file,
+          //   ContentType: 'image/jpeg'
+          // };
+          // const s3Upload = await s3.upload(s3Params).promise();
+          // const s3Path = s3Upload.Location;
+          // document.getElementById('s3ImagePath').value = s3Path;
+          
+          // --- 2. Indexar rostro en AWS Rekognition (Simulado) ---
+          // (Requiere una "Collection" en Rekognition previamente creada)
+          // const rekParams = {
+          //   CollectionId: "CondoConnect-Residents-Collection",
+          //   DetectionAttributes: ["DEFAULT"],
+          //   Image: {
+          //     S3Object: {
+          //       Bucket: s3Params.Bucket,
+          //       Name: s3Params.Key,
+          //     },
+          //   },
+          //   MaxFaces: 1,
+          // };
+          // const rekData = await rekognition.indexFaces(rekParams).promise();
+          
+          // if (rekData.FaceRecords && rekData.FaceRecords.length > 0) {
+          //   const faceId = rekData.FaceRecords[0].Face.FaceId;
+          //   document.getElementById('faceEmbeddingId').value = faceId;
+          //   alert(`✅ Rostro indexado en AWS Rekognition. FaceID: ${faceId}`);
+          // } else {
+          //   throw new Error("No se detectó ningún rostro en la imagen.");
+          // }
+
+          // --- Simulación para prototipo ---
+          const simulatedFaceId = `face-id-${Date.now()}`;
+          document.getElementById('faceEmbeddingId').value = simulatedFaceId;
+          document.getElementById('s3ImagePath').value = `s3-path/face.jpg`;
+          alert(`✅ Simulación de AWS exitosa. FaceID: ${simulatedFaceId}`);
+
+        } catch (err) {
+          console.error("Error en el procesamiento de AWS:", err);
+          alert("Error al procesar el rostro: " + err.message);
+          captureBtn.innerHTML = '<i class="fas fa-camera"></i><span>Reintentar Captura</span>';
+          captureBtn.classList.replace('bg-green-600', 'bg-blue-600');
+          captureBtn.disabled = false;
+        }
+      }, 'image/jpeg');
+    }
+
+    // 3. Enviar Formulario Completo
+    document.getElementById('residentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const faceId = document.getElementById('faceEmbeddingId').value;
+      if (!faceId) {
+        alert("Por favor, capture una foto del rostro primero.");
+        return;
+      }
+
+      alert("Simulando: 1. Subiendo documentos a S3... 2. Guardando registro en DynamoDB...");
+
+      try {
+        // --- 1. Subir documentos a AWS S3 (Simulado) ---
+        // (Aquí iría la lógica para subir idDocument y proofOfAddress a S3)
+        const idDocPath = `s3-path/docs/${document.getElementById('idDocument').files[0].name}`;
+        
+        // --- 2. Guardar registro en AWS DynamoDB (Simulado) ---
+        // const residentId = `res-${Date.now()}`;
+        // const dbParams = {
+        //   TableName: "CondoConnect-Residents",
+        //   Item: {
+        //     "ResidentID": residentId,
+        //     "PropertyID": "PROP-001", // (Obtenido de la URL)
+        //     "FullName": document.getElementById('fullName').value,
+        //     "Email": document.getElementById('email').value,
+        //     "Phone": document.getElementById('phone').value,
+        //     "Unit": document.getElementById('unit').value,
+        //     "RekognitionFaceId": faceId,
+        //     "S3FaceImagePath": document.getElementById('s3ImagePath').value,
+        //     "S3IdDocPath": idDocPath,
+        //     "Status": "Active",
+        //     "CreatedAt": new Date().toISOString()
+        //   }
+        // };
+        // await dynamoDB.put(dbParams).promise();
+        
+        // --- Simulación para prototipo ---
+        alert('✅ ¡Residente registrado exitosamente en AWS DynamoDB!');
+        window.location.href = 'panel-accesos-propiedad.html'; // Redirigir
+
+      } catch (err) {
+        console.error("Error al guardar en DynamoDB:", err);
+        alert("Error al guardar el registro: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>
+
+

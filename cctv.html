@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCTV con IA (AWS Rekognition) – CondoConnect AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1093.0.min.js"></script>
+  <style>
+    body { box-sizing: border-box; margin: 0; padding: 0; background: #0f172a; }
+    .glass-effect { background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.8)); backdrop-filter: blur(20px); border: 1px solid rgba(59,130,246,0.3); }
+    .metallic-surface { background: linear-gradient(145deg, #0f172a, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a); border: 1px solid rgba(59,130,246,0.4); }
+    .video-placeholder {
+      background: #000 url('https://placehold.co/600x400/000000/334155?text=Simulando+Stream+de+AWS+Kinesis...') center center no-repeat;
+      background-size: cover;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+  </style>
+</head>
+<body class="text-white">
+  <!-- Sidebar -->
+  <div class="fixed left-0 top-0 h-full w-72 metallic-surface z-50 p-6">
+    <!-- (Contenido del Sidebar omitido por brevedad, igual al de panel-propiedad.html) -->
+    <nav class="mt-6 space-y-2">
+        <a href="panel-propiedad.html" class="flex items-center space-x-3 p-3 rounded-lg text-slate-300 hover:bg-blue-500/20">
+            <i class="fas fa-arrow-left w-5 text-center"></i><span>Volver al Panel</span>
+        </a>
+        <a href="panel-accesos-propiedad.html" class="flex items-center space-x-3 p-3 rounded-lg text-slate-300 hover:bg-blue-500/20">
+            <i class="fas fa-id-card w-5 text-center"></i><span>Control de Accesos</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 p-3 rounded-lg bg-blue-500/30 text-white font-semibold">
+            <i class="fas fa-video w-5 text-center"></i><span>CCTV con IA</span>
+        </a>
+    </nav>
+  </div>
+
+  <!-- Contenido Principal -->
+  <div id="main-content" class="ml-72 p-6 md:p-10">
+    <header class="mb-6">
+      <h2 class="text-3xl font-bold text-blue-200">Panel de Monitoreo CCTV con IA (AWS)</h2>
+      <p class="text-blue-300">Streams de AWS Kinesis con análisis de AWS Rekognition Video.</p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Columna de Feeds de Video -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Feed Principal -->
+        <div class="glass-effect rounded-xl p-4">
+          <h3 class="text-xl font-bold text-blue-200 mb-4">Cámara Principal: Acceso Vehicular</h3>
+          <div class="aspect-video video-placeholder rounded-lg">
+            <!-- En producción, aquí se montaría el player de Kinesis Video Streams -->
+          </div>
+        </div>
+        
+        <!-- Feeds Secundarios -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="glass-effect rounded-xl p-3">
+            <h4 class="text-md font-semibold text-blue-200 mb-2">Lobby Principal</h4>
+            <div class="aspect-video video-placeholder rounded-lg"></div>
+          </div>
+          <div class="glass-effect rounded-xl p-3">
+            <h4 class="text-md font-semibold text-blue-200 mb-2">Perímetro Sur</h4>
+            <div class="aspect-video video-placeholder rounded-lg"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna de Alertas de IA (DynamoDB) -->
+      <div class="lg:col-span-1 glass-effect rounded-xl p-6">
+        <h3 class="text-xl font-bold text-blue-200 mb-4">🚨 Alertas de IA (DynamoDB)</h3>
+        <ul id="alert-list" class="space-y-4 max-h-[600px] overflow-y-auto">
+          <!-- Alertas simuladas (se cargarían desde DynamoDB) -->
+          <li class="p-3 bg-red-500/10 rounded-lg border-l-4 border-red-500">
+            <div class="font-semibold">Intrusión detectada</div>
+            <div class="text-sm text-blue-300">Cámara: Perímetro Sur | 18:03:15</div>
+            <p class="text-xs text-gray-300 mt-1">Confianza (Rekognition): 94%</p>
+          </li>
+          <li class="p-3 bg-yellow-500/10 rounded-lg border-l-4 border-yellow-500">
+            <div class="font-semibold">Objeto abandonado</div>
+            <div class="text-sm text-blue-300">Cámara: Lobby Principal | 17:55:40</div>
+            <p class="text-xs text-gray-300 mt-1">Confianza (Rekognition): 88%</p>
+          </li>
+          <li class="p-3 bg-blue-500/10 rounded-lg border-l-4 border-blue-500">
+            <div class="font-semibold">Rostro NO Reconocido</div>
+            <div class="text-sm text-blue-300">Cámara: Acceso Vehicular | 17:50:12</div>
+            <p class="text-xs text-gray-300 mt-1">Confianza (Rekognition): 99%</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Lógica de AWS (Simulada) ---
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Configurar AWS SDK (con credenciales de Cognito)
+      // AWS.config.update({...});
+      // const kinesisvideo = new AWS.KinesisVideo();
+      // const dynamoDB = new AWS.DynamoDB.DocumentClient();
+
+      // --- 2. Cargar Streams de Kinesis (Simulado) ---
+      // (Esta lógica es compleja, implicaría obtener el HLS/DASH streaming endpoint
+      // de Kinesis y cargarlo en un player como HLS.js o Shaka Player)
+      console.log("Simulando conexión a AWS Kinesis Video Streams...");
+
+      // --- 3. Cargar Alertas de DynamoDB (Simulado) ---
+      // (AWS Rekognition Video procesaría el stream de Kinesis,
+      // detectaría eventos, invocaría una Lambda,
+      // y la Lambda guardaría la alerta en DynamoDB.
+      // Aquí solo consultamos la tabla de alertas.)
+      
+      // const dbParams = {
+      //   TableName: "CondoConnect-CCTV-Alerts",
+      //   KeyConditionExpression: "PropertyID = :pid",
+      //   ExpressionAttributeValues: { ":pid": "PROP-001" },
+      //   ScanIndexForward: false, // Más recientes primero
+      //   Limit: 10
+      // };
+      try {
+        // const data = await dynamoDB.query(dbParams).promise();
+        // const alerts = data.Items;
+        // const alertListElement = document.getElementById('alert-list');
+        // alertListElement.innerHTML = ''; // Limpiar lista (excepto las simuladas)
+        // alerts.forEach(alert => {
+        //   // ... Lógica para renderizar cada alerta ...
+        // });
+        console.log("Simulando carga de alertas de IA desde DynamoDB...");
+      } catch (err) {
+        console.error("Error al cargar alertas de DynamoDB:", err);
+      }
+    });
+  </script>
+</body>
+</html>
+
+
